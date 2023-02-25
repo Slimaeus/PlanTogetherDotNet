@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNet.Identity.EntityFramework;
 using PlanTogetherDotNetAPI.Models;
-using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Entity;
-using System.Linq;
-using System.Web;
 
 namespace PlanTogetherDotNetAPI.Data
 {

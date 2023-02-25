@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using PlanTogetherDotNetAPI.Data;
 using PlanTogetherDotNetAPI.DTOs;
 using PlanTogetherDotNetAPI.Models;
@@ -27,9 +28,10 @@ namespace PlanTogetherDotNetAPI.Controllers
             this.mapper = mapper;
         }
         // GET: api/Missions
-        public IQueryable<Mission> GetMissions()
+        public IQueryable<MissionDTO> GetMissions()
         {
-            return db.Missions;
+            //var missions = mapper.Map<IQueryable<MissionDTO>>(db.Missions);
+            return db.Missions.ProjectTo<MissionDTO>(mapper.ConfigurationProvider);
         }
 
         // GET: api/Missions/5

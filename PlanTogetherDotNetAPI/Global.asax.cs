@@ -22,23 +22,27 @@ namespace PlanTogetherDotNetAPI
     {
         protected void Application_Start()
         {
-            var container = new UnityContainer(); //Dependency Injection
+            var container = new UnityContainer(); //Init-Dependency-Injection
 
             container.RegisterType<DataContext>(new InjectionConstructor());
+            container.RegisterFactory<UserStore<AppUser>>(
+                c => new UserStore<AppUser>(c.Resolve<DataContext>())    
+            );
             container.RegisterFactory<UserManager<AppUser>>(
-                c => new UserManager<AppUser>(new UserStore<AppUser>(new DataContext()))
+                c => new UserManager<AppUser>(c.Resolve<UserStore<AppUser>>())
             );
 
+            //Config-AutoMapper
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile(new MappingProfile());
             });
-            container.RegisterType<IMapper, Mapper>(new InjectionConstructor(config));
+            container.RegisterInstance(config.CreateMapper());
 
             AreaRegistration.RegisterAllAreas();
 
             GlobalConfiguration.Configure(WebApiConfig.Register);
-            GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container);
+            GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container); //Config-Dependency-Injection
 
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
