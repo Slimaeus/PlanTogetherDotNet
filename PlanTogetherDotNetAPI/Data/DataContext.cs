@@ -13,6 +13,7 @@ namespace PlanTogetherDotNetAPI.Data
 
         public DbSet<Mission> Missions { get; set; }
         public DbSet<Project> Projects { get; set; }
+        public DbSet<Group> Groups { get; set; }
         public DbSet<MissionUser> MissionUsers { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

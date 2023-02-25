@@ -90,7 +90,7 @@ namespace PlanTogetherDotNetAPI.Controllers
         }
 
         // POST: api/Projects
-        [ResponseType(typeof(Project))]
+        [ResponseType(typeof(ProjectDTO))]
         public async Task<IHttpActionResult> PostProject(CreateProjectDTO input)
         {
             if (!ModelState.IsValid)
@@ -98,7 +98,14 @@ namespace PlanTogetherDotNetAPI.Controllers
                 return BadRequest(ModelState);
             }
 
+            var group = await db.Groups
+                .Include(g => g.Projects)
+                .FirstOrDefaultAsync(g => g.Name == input.GroupName);
+
+            if (group == null) return NotFound();
+
             var project = mapper.Map<Project>(input);
+            group.Projects.Add(project);
             db.Projects.Add(project);
 
             try
@@ -117,11 +124,11 @@ namespace PlanTogetherDotNetAPI.Controllers
                 }
             }
 
-            return CreatedAtRoute("DefaultApi", new { id = project.Id }, project);
+            return CreatedAtRoute("DefaultApi", new { id = project.Id }, mapper.Map<ProjectDTO>(project));
         }
 
         // DELETE: api/Projects/5
-        [ResponseType(typeof(Project))]
+        [ResponseType(typeof(ProjectDTO))]
         public async Task<IHttpActionResult> DeleteProject(Guid id)
         {
             Project project = await db.Projects.FindAsync(id);
@@ -133,7 +140,7 @@ namespace PlanTogetherDotNetAPI.Controllers
             db.Projects.Remove(project);
             await db.SaveChangesAsync();
 
-            return Ok(project);
+            return Ok(mapper.Map<ProjectDTO>(project));
         }
 
         [Route("{projectId}/add-mission/{missionId}")]

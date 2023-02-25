@@ -12,6 +12,8 @@ namespace PlanTogetherDotNetAPI.Models
         public string Title { get; set; }
         public string Description { get; set; }
 
+        public Group Group { get; set; }
+
         public ICollection<Mission> Missions { get; set; } = new HashSet<Mission>();
     }
 }

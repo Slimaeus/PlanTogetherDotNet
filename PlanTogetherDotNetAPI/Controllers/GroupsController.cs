@@ -12,45 +12,43 @@ using System.Web.Http.Description;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using PlanTogetherDotNetAPI.Data;
-using PlanTogetherDotNetAPI.DTOs;
+using PlanTogetherDotNetAPI.DTOs.Group;
 using PlanTogetherDotNetAPI.Models;
 
 namespace PlanTogetherDotNetAPI.Controllers
 {
-    public class MissionsController : ApiController
+    public class GroupsController : ApiController
     {
         private readonly DataContext db;
         private readonly IMapper mapper;
 
-        public MissionsController(DataContext context, IMapper mapper)
+        public GroupsController(DataContext context, IMapper mapper)
         {
             db = context;
             this.mapper = mapper;
         }
-        // GET: api/Missions
-        public IQueryable<MissionDTO> GetMissions()
+        // GET: api/Groups
+        public IQueryable<GroupDTO> GetGroups()
         {
-            //var missions = mapper.Map<IQueryable<MissionDTO>>(db.Missions);
-            return db.Missions.ProjectTo<MissionDTO>(mapper.ConfigurationProvider);
+            return db.Groups.ProjectTo<GroupDTO>(mapper.ConfigurationProvider);
         }
 
-        // GET: api/Missions/5
-        [ResponseType(typeof(MissionDTO))]
-        public async Task<IHttpActionResult> GetMission(Guid id)
+        // GET: api/Groups/5
+        [ResponseType(typeof(GroupDTO))]
+        public async Task<IHttpActionResult> GetGroup(Guid id)
         {
-            Mission mission = await db.Missions.FindAsync(id);
-            MissionDTO missionDTO = mapper.Map<MissionDTO>(mission);
-            if (mission == null)
+            Group group = await db.Groups.FindAsync(id);
+            if (group == null)
             {
                 return NotFound();
             }
 
-            return Ok(missionDTO);
+            return Ok(mapper.Map<GroupDTO>(group));
         }
 
-        // PUT: api/Missions/5
+        // PUT: api/Groups/5
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutMission(Guid id, EditMissionDTO input)
+        public async Task<IHttpActionResult> PutGroup(Guid id, EditGroupDTO input)
         {
             if (!ModelState.IsValid)
             {
@@ -61,9 +59,12 @@ namespace PlanTogetherDotNetAPI.Controllers
             {
                 return BadRequest();
             }
-            var mission = await db.Missions.FindAsync(id);
-            mapper.Map(input, mission);
-            db.Entry(mission).State = EntityState.Modified;
+
+            var group = await db.Groups.FindAsync(id);
+
+            mapper.Map(input, group);
+
+            db.Entry(group).State = EntityState.Modified;
 
             try
             {
@@ -71,7 +72,7 @@ namespace PlanTogetherDotNetAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!MissionExists(id))
+                if (!GroupExists(id))
                 {
                     return NotFound();
                 }
@@ -84,23 +85,26 @@ namespace PlanTogetherDotNetAPI.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/Missions
-        [ResponseType(typeof(MissionDTO))]
-        public async Task<IHttpActionResult> PostMission(CreateMissionDTO input)
+        // POST: api/Groups
+        [ResponseType(typeof(GroupDTO))]
+        public async Task<IHttpActionResult> PostGroup(CreateGroupDTO input)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var project = await db.Projects
-                .Include(p => p.Missions)
-                .FirstOrDefaultAsync(p => p.Name == input.ProjectName);
 
-            if (project == null) return NotFound();
+            var user = await db.Users
+                .Include(u => u.Groups)
+                .FirstOrDefaultAsync(u => u.UserName == input.UserName);
 
-            var mission = mapper.Map<Mission>(input);
-            project.Missions.Add(mission);
-            db.Missions.Add(mission);
+            if (user == null) return NotFound();
+
+            var group = mapper.Map<Group>(input);
+
+            user.Groups.Add(group);
+
+            db.Groups.Add(group);
 
             try
             {
@@ -108,7 +112,7 @@ namespace PlanTogetherDotNetAPI.Controllers
             }
             catch (DbUpdateException)
             {
-                if (MissionExists(mission.Id))
+                if (GroupExists(group.Id))
                 {
                     return Conflict();
                 }
@@ -118,23 +122,23 @@ namespace PlanTogetherDotNetAPI.Controllers
                 }
             }
 
-            return CreatedAtRoute("DefaultApi", new { id = mission.Id }, mapper.Map<MissionDTO>(mission));
+            return CreatedAtRoute("DefaultApi", new { id = group.Id }, mapper.Map<GroupDTO>(group));
         }
 
-        // DELETE: api/Missions/5
-        [ResponseType(typeof(Mission))]
-        public async Task<IHttpActionResult> DeleteMission(Guid id)
+        // DELETE: api/Groups/5
+        [ResponseType(typeof(GroupDTO))]
+        public async Task<IHttpActionResult> DeleteGroup(Guid id)
         {
-            Mission mission = await db.Missions.FindAsync(id);
-            if (mission == null)
+            Group group = await db.Groups.FindAsync(id);
+            if (group == null)
             {
                 return NotFound();
             }
 
-            db.Missions.Remove(mission);
+            db.Groups.Remove(group);
             await db.SaveChangesAsync();
 
-            return Ok(mission);
+            return Ok(mapper.Map<GroupDTO>(group));
         }
 
         protected override void Dispose(bool disposing)
@@ -146,9 +150,9 @@ namespace PlanTogetherDotNetAPI.Controllers
             base.Dispose(disposing);
         }
 
-        private bool MissionExists(Guid id)
+        private bool GroupExists(Guid id)
         {
-            return db.Missions.Count(e => e.Id == id) > 0;
+            return db.Groups.Count(e => e.Id == id) > 0;
         }
     }
 }

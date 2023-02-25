@@ -10,5 +10,6 @@ namespace PlanTogetherDotNetAPI.Models
     {
         public string DisplayName { get; set; }
         public ICollection<MissionUser> MissionUsers { get; set; }
+        public ICollection<Group> Groups { get; set; }
     }
 }

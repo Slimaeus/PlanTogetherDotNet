@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Web;
 
 namespace PlanTogetherDotNetAPI.DTOs
@@ -21,6 +22,7 @@ namespace PlanTogetherDotNetAPI.DTOs
         public DateTime EndDate { get; set; } = DateTime.UtcNow;
         public DateTime CompletedDate { get; set; } = DateTime.UtcNow;
 
-        public Guid ProjectId { get; set; }
+        [Required]
+        public string ProjectName { get; set; }
     }
 }

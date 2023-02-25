@@ -13,7 +13,7 @@ namespace PlanTogetherDotNetAPI.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "202302250652158_Init"; }
+            get { return "202302251427373_Init"; }
         }
         
         string IMigrationMetadata.Source

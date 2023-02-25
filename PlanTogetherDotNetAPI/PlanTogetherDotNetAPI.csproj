@@ -192,12 +192,17 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\GroupsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MissionsController.cs" />
     <Compile Include="Controllers\ProjectsController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Data\DataContext.cs" />
     <Compile Include="DTOs\Account\UserDTO.cs" />
+    <Compile Include="DTOs\Common\MemberDTO.cs" />
+    <Compile Include="DTOs\Group\CreateGroupDTO.cs" />
+    <Compile Include="DTOs\Group\EditGroupDTO.cs" />
+    <Compile Include="DTOs\Group\GroupDTO.cs" />
     <Compile Include="DTOs\Mission\CreateMissionDTO.cs" />
     <Compile Include="DTOs\Mission\EditMissionDTO.cs" />
     <Compile Include="DTOs\Account\LoginDTO.cs" />
@@ -212,15 +217,12 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202302250652158_Init.cs" />
-    <Compile Include="Migrations\202302250652158_Init.designer.cs">
-      <DependentUpon>202302250652158_Init.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202302250752092_AddMissionUsersTable.cs" />
-    <Compile Include="Migrations\202302250752092_AddMissionUsersTable.designer.cs">
-      <DependentUpon>202302250752092_AddMissionUsersTable.cs</DependentUpon>
+    <Compile Include="Migrations\202302251427373_Init.cs" />
+    <Compile Include="Migrations\202302251427373_Init.designer.cs">
+      <DependentUpon>202302251427373_Init.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\Group.cs" />
     <Compile Include="Models\MissionUser.cs" />
     <Compile Include="Profiles\MappingProfile.cs" />
     <Compile Include="Models\AppUser.cs" />
@@ -314,11 +316,8 @@
     <Content Include="Scripts\jquery-3.4.1.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202302250652158_Init.resx">
-      <DependentUpon>202302250652158_Init.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202302250752092_AddMissionUsersTable.resx">
-      <DependentUpon>202302250752092_AddMissionUsersTable.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202302251427373_Init.resx">
+      <DependentUpon>202302251427373_Init.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
