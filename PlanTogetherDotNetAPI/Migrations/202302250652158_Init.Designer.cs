@@ -7,13 +7,13 @@ namespace PlanTogetherDotNetAPI.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.4.4")]
-    public sealed partial class AddEnumCLass : IMigrationMetadata
+    public sealed partial class Init : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddEnumCLass));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Init));
         
         string IMigrationMetadata.Id
         {
-            get { return "202302250317097_Add-Enum-CLass"; }
+            get { return "202302250652158_Init"; }
         }
         
         string IMigrationMetadata.Source

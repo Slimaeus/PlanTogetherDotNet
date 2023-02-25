@@ -1,4 +1,5 @@
-﻿using PlanTogetherDotNetAPI.Enums;
+﻿using Newtonsoft.Json;
+using PlanTogetherDotNetAPI.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,5 +17,10 @@ namespace PlanTogetherDotNetAPI.Models
         public DateTime StartDate { get; set; } 
         public DateTime EndDate { get; set; } 
         public DateTime CompletedDate { get; set; }
+
+        public Guid ProjectId { get; set; }
+        public Project Project { get; set; }
+
+        public ICollection<MissionUser> MissionUsers { get; set; }
     }
 }

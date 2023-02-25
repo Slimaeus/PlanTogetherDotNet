@@ -197,38 +197,32 @@
     <Compile Include="Controllers\ProjectsController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Data\DataContext.cs" />
-    <Compile Include="DTOs\CreateMissionDTO.cs" />
-    <Compile Include="DTOs\EditMissionDTO.cs" />
-    <Compile Include="DTOs\LoginDTO.cs" />
-    <Compile Include="DTOs\MissionDTO.cs" />
-    <Compile Include="DTOs\RegisterDTO.cs" />
+    <Compile Include="DTOs\Account\UserDTO.cs" />
+    <Compile Include="DTOs\Mission\CreateMissionDTO.cs" />
+    <Compile Include="DTOs\Mission\EditMissionDTO.cs" />
+    <Compile Include="DTOs\Account\LoginDTO.cs" />
+    <Compile Include="DTOs\Mission\MissionDTO.cs" />
+    <Compile Include="DTOs\Account\RegisterDTO.cs" />
+    <Compile Include="DTOs\Project\AddMissionDTO.cs" />
+    <Compile Include="DTOs\Project\CreateProjectDTO.cs" />
+    <Compile Include="DTOs\Project\EditProjectDTO.cs" />
+    <Compile Include="DTOs\Project\ProjectDTO.cs" />
     <Compile Include="Enums\MissionPriorities.cs" />
     <Compile Include="Enums\MissionStates.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Profiles\MappingProfile.cs" />
-    <Compile Include="Migrations\202302240743520_Init.cs" />
-    <Compile Include="Migrations\202302240743520_Init.designer.cs">
-      <DependentUpon>202302240743520_Init.cs</DependentUpon>
+    <Compile Include="Migrations\202302250652158_Init.cs" />
+    <Compile Include="Migrations\202302250652158_Init.designer.cs">
+      <DependentUpon>202302250652158_Init.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202302240754487_Add-Mission-Model.cs" />
-    <Compile Include="Migrations\202302240754487_Add-Mission-Model.designer.cs">
-      <DependentUpon>202302240754487_Add-Mission-Model.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202302240805114_Add-Project-Model.cs" />
-    <Compile Include="Migrations\202302240805114_Add-Project-Model.designer.cs">
-      <DependentUpon>202302240805114_Add-Project-Model.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202302250317097_Add-Enum-CLass.cs" />
-    <Compile Include="Migrations\202302250317097_Add-Enum-CLass.designer.cs">
-      <DependentUpon>202302250317097_Add-Enum-CLass.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202302250330497_AddEntityClassAndInterface.cs" />
-    <Compile Include="Migrations\202302250330497_AddEntityClassAndInterface.designer.cs">
-      <DependentUpon>202302250330497_AddEntityClassAndInterface.cs</DependentUpon>
+    <Compile Include="Migrations\202302250752092_AddMissionUsersTable.cs" />
+    <Compile Include="Migrations\202302250752092_AddMissionUsersTable.designer.cs">
+      <DependentUpon>202302250752092_AddMissionUsersTable.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\MissionUser.cs" />
+    <Compile Include="Profiles\MappingProfile.cs" />
     <Compile Include="Models\AppUser.cs" />
     <Compile Include="Models\Entity.cs" />
     <Compile Include="Models\IEntity.cs" />
@@ -320,20 +314,11 @@
     <Content Include="Scripts\jquery-3.4.1.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202302240743520_Init.resx">
-      <DependentUpon>202302240743520_Init.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202302250652158_Init.resx">
+      <DependentUpon>202302250652158_Init.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202302240754487_Add-Mission-Model.resx">
-      <DependentUpon>202302240754487_Add-Mission-Model.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202302240805114_Add-Project-Model.resx">
-      <DependentUpon>202302240805114_Add-Project-Model.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202302250317097_Add-Enum-CLass.resx">
-      <DependentUpon>202302250317097_Add-Enum-CLass.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202302250330497_AddEntityClassAndInterface.resx">
-      <DependentUpon>202302250330497_AddEntityClassAndInterface.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202302250752092_AddMissionUsersTable.resx">
+      <DependentUpon>202302250752092_AddMissionUsersTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

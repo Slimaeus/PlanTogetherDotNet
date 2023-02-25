@@ -20,5 +20,7 @@ namespace PlanTogetherDotNetAPI.DTOs
         public DateTime StartDate { get; set; } = DateTime.UtcNow; 
         public DateTime EndDate { get; set; } = DateTime.UtcNow;
         public DateTime CompletedDate { get; set; } = DateTime.UtcNow;
+
+        public Guid ProjectId { get; set; }
     }
 }

@@ -92,8 +92,15 @@ namespace PlanTogetherDotNetAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
+            var project = await db.Projects
+                
+                .Include(p => p.Missions)
+                .FirstOrDefaultAsync(p => p.Id == input.ProjectId);
+
             var mission = mapper.Map<Mission>(input);
+            project.Missions.Add(mission);
             db.Missions.Add(mission);
+
 
             try
             {
@@ -111,7 +118,7 @@ namespace PlanTogetherDotNetAPI.Controllers
                 }
             }
 
-            return CreatedAtRoute("DefaultApi", new { id = mission.Id }, mission);
+            return CreatedAtRoute("DefaultApi", new { id = mission.Id }, mapper.Map<MissionDTO>(mission));
         }
 
         // DELETE: api/Missions/5

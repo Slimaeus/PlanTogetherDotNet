@@ -9,5 +9,6 @@ namespace PlanTogetherDotNetAPI.Models
     public class AppUser : IdentityUser
     {
         public string DisplayName { get; set; }
+        public ICollection<MissionUser> MissionUsers { get; set; }
     }
 }

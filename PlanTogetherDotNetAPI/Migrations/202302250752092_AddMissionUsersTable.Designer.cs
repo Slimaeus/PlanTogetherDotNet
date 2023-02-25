@@ -7,13 +7,13 @@ namespace PlanTogetherDotNetAPI.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.4.4")]
-    public sealed partial class AddProjectModel : IMigrationMetadata
+    public sealed partial class AddMissionUsersTable : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddProjectModel));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddMissionUsersTable));
         
         string IMigrationMetadata.Id
         {
-            get { return "202302240805114_Add-Project-Model"; }
+            get { return "202302250752092_AddMissionUsersTable"; }
         }
         
         string IMigrationMetadata.Source

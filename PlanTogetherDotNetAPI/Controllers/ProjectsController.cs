@@ -9,42 +9,59 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using PlanTogetherDotNetAPI.Data;
+using PlanTogetherDotNetAPI.DTOs.Project;
 using PlanTogetherDotNetAPI.Models;
 
 namespace PlanTogetherDotNetAPI.Controllers
 {
+    [RoutePrefix("api/Projects")]
     public class ProjectsController : ApiController
     {
-        private DataContext db = new DataContext();
+        //private DataContext db = new DataContext();
+        private readonly DataContext db;
+        private readonly IMapper mapper;
+
+        public ProjectsController(DataContext context, IMapper mapper) 
+        {
+            db = context;
+            this.mapper = mapper;
+        }
 
         // GET: api/Projects
-        public IQueryable<Project> GetProjects()
+        public IQueryable<ProjectDTO> GetProjects()
         {
-            return db.Projects;
+            return db.Projects.ProjectTo<ProjectDTO>(mapper.ConfigurationProvider);
         }
 
         // GET: api/Projects/5
-        [ResponseType(typeof(Project))]
+        [ResponseType(typeof(ProjectDTO))]
         public async Task<IHttpActionResult> GetProject(Guid id)
         {
             Project project = await db.Projects.FindAsync(id);
+            ProjectDTO projectDTO = mapper.Map<ProjectDTO>(project);
             if (project == null)
             {
                 return NotFound();
             }
 
-            return Ok(project);
+            return Ok(projectDTO);
         }
 
         // PUT: api/Projects/5
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutProject(Guid id, Project project)
+        public async Task<IHttpActionResult> PutProject(Guid id, EditProjectDTO input)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+
+            var project = await db.Projects.FindAsync(id);
+            mapper.Map(input, project);
+            db.Entry(project).State = EntityState.Modified;
 
             if (id != project.Id)
             {
@@ -74,13 +91,14 @@ namespace PlanTogetherDotNetAPI.Controllers
 
         // POST: api/Projects
         [ResponseType(typeof(Project))]
-        public async Task<IHttpActionResult> PostProject(Project project)
+        public async Task<IHttpActionResult> PostProject(CreateProjectDTO input)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            var project = mapper.Map<Project>(input);
             db.Projects.Add(project);
 
             try
@@ -116,6 +134,34 @@ namespace PlanTogetherDotNetAPI.Controllers
             await db.SaveChangesAsync();
 
             return Ok(project);
+        }
+
+        [Route("{projectId}/add-mission/{missionId}")]
+        public async Task<IHttpActionResult> PatchAddMission(Guid projectId, Guid missionId)
+        {
+            var project = await db.Projects
+                .Include(p => p.Missions)
+                .FirstOrDefaultAsync(p => p.Id == projectId);
+
+            if (project == null) return NotFound();
+
+            var isMissionExists = project.Missions
+                .Any(m => m.Id == missionId);
+
+            if (isMissionExists) return BadRequest();
+
+            var mission = await db.Missions
+                .FirstOrDefaultAsync(m => m.Id == missionId);
+
+            if (mission == null) return NotFound();
+
+            project.Missions.Add(mission);
+
+            var success = await db.SaveChangesAsync() > 0;
+
+            if (success) return Ok();
+
+            return BadRequest();
         }
 
         protected override void Dispose(bool disposing)

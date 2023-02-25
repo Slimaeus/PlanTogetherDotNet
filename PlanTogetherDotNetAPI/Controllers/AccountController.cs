@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using PlanTogetherDotNetAPI.Data;
 using PlanTogetherDotNetAPI.DTOs;
+using PlanTogetherDotNetAPI.DTOs.Account;
 using PlanTogetherDotNetAPI.Models;
 using System;
 using System.Collections.Generic;
@@ -18,10 +20,17 @@ namespace PlanTogetherDotNetAPI.Controllers
     public class AccountController : ApiController
     {
         private readonly UserManager<AppUser> userManager;
+        private readonly IMapper mapper;
 
-        public AccountController(UserManager<AppUser> userManager) 
+        public AccountController(UserManager<AppUser> userManager, IMapper mapper) 
         {
             this.userManager = userManager;
+            this.mapper = mapper;
+        }
+
+        public async Task<IHttpActionResult> GetCurrentUser()
+        {
+            return Ok();
         }
 
         [Route("user-count")]
@@ -43,7 +52,7 @@ namespace PlanTogetherDotNetAPI.Controllers
             var result = await userManager.CreateAsync(user,input.Password);
             if(result.Succeeded)
             {
-                return Ok(result);
+                return Ok(mapper.Map<UserDTO>(user));
             }
             return BadRequest();
         }
@@ -57,7 +66,7 @@ namespace PlanTogetherDotNetAPI.Controllers
             {
                 return Unauthorized();
             }
-            return Ok();
+            return Ok(mapper.Map<UserDTO>(user));
         }
     }
 }
