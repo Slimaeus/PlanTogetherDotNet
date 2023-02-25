@@ -46,6 +46,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper, Version=8.1.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.8.1.1\lib\net461\AutoMapper.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -65,6 +68,9 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -124,6 +130,15 @@
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.9\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.Abstractions, Version=5.11.7.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.5.11.10\lib\net47\Unity.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Container, Version=5.11.11.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.5.11.10\lib\net47\Unity.Container.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.WebApi, Version=5.4.0.0, Culture=neutral, PublicKeyToken=43da31bc42a85347, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.WebAPI.5.4.0\lib\net45\Unity.WebApi.dll</HintPath>
+    </Reference>
     <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
       <HintPath>..\packages\WebActivatorEx.2.0\lib\net40\WebActivatorEx.dll</HintPath>
     </Reference>
@@ -146,6 +161,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
+    <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Areas\HelpPage\ApiDescriptionExtensions.cs" />
     <Compile Include="Areas\HelpPage\App_Start\HelpPageConfig.cs" />
@@ -181,11 +197,17 @@
     <Compile Include="Controllers\ProjectsController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Data\DataContext.cs" />
+    <Compile Include="DTOs\CreateMissionDTO.cs" />
+    <Compile Include="DTOs\EditMissionDTO.cs" />
     <Compile Include="DTOs\LoginDTO.cs" />
+    <Compile Include="DTOs\MissionDTO.cs" />
     <Compile Include="DTOs\RegisterDTO.cs" />
+    <Compile Include="Enums\MissionPriorities.cs" />
+    <Compile Include="Enums\MissionStates.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Profiles\MappingProfile.cs" />
     <Compile Include="Migrations\202302240743520_Init.cs" />
     <Compile Include="Migrations\202302240743520_Init.designer.cs">
       <DependentUpon>202302240743520_Init.cs</DependentUpon>
@@ -198,8 +220,18 @@
     <Compile Include="Migrations\202302240805114_Add-Project-Model.designer.cs">
       <DependentUpon>202302240805114_Add-Project-Model.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202302250317097_Add-Enum-CLass.cs" />
+    <Compile Include="Migrations\202302250317097_Add-Enum-CLass.designer.cs">
+      <DependentUpon>202302250317097_Add-Enum-CLass.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202302250330497_AddEntityClassAndInterface.cs" />
+    <Compile Include="Migrations\202302250330497_AddEntityClassAndInterface.designer.cs">
+      <DependentUpon>202302250330497_AddEntityClassAndInterface.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AppUser.cs" />
+    <Compile Include="Models\Entity.cs" />
+    <Compile Include="Models\IEntity.cs" />
     <Compile Include="Models\Mission.cs" />
     <Compile Include="Models\Project.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -296,6 +328,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202302240805114_Add-Project-Model.resx">
       <DependentUpon>202302240805114_Add-Project-Model.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202302250317097_Add-Enum-CLass.resx">
+      <DependentUpon>202302250317097_Add-Enum-CLass.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202302250330497_AddEntityClassAndInterface.resx">
+      <DependentUpon>202302250330497_AddEntityClassAndInterface.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

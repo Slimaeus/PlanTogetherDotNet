@@ -9,15 +9,23 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using AutoMapper;
 using PlanTogetherDotNetAPI.Data;
+using PlanTogetherDotNetAPI.DTOs;
 using PlanTogetherDotNetAPI.Models;
 
 namespace PlanTogetherDotNetAPI.Controllers
 {
     public class MissionsController : ApiController
     {
-        private DataContext db = new DataContext();
+        private readonly DataContext db;
+        private readonly IMapper mapper;
 
+        public MissionsController(DataContext context, IMapper mapper)
+        {
+            db = context;
+            this.mapper = mapper;
+        }
         // GET: api/Missions
         public IQueryable<Mission> GetMissions()
         {
@@ -25,32 +33,34 @@ namespace PlanTogetherDotNetAPI.Controllers
         }
 
         // GET: api/Missions/5
-        [ResponseType(typeof(Mission))]
+        [ResponseType(typeof(MissionDTO))]
         public async Task<IHttpActionResult> GetMission(Guid id)
         {
             Mission mission = await db.Missions.FindAsync(id);
+            MissionDTO missionDTO = mapper.Map<MissionDTO>(mission);
             if (mission == null)
             {
                 return NotFound();
             }
 
-            return Ok(mission);
+            return Ok(missionDTO);
         }
 
         // PUT: api/Missions/5
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutMission(Guid id, Mission mission)
+        public async Task<IHttpActionResult> PutMission(Guid id, EditMissionDTO input)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != mission.Id)
+            if (id != input.Id)
             {
                 return BadRequest();
             }
-
+            var mission = await db.Missions.FindAsync(id);
+            mapper.Map(input, mission);
             db.Entry(mission).State = EntityState.Modified;
 
             try
@@ -74,13 +84,13 @@ namespace PlanTogetherDotNetAPI.Controllers
 
         // POST: api/Missions
         [ResponseType(typeof(Mission))]
-        public async Task<IHttpActionResult> PostMission(Mission mission)
+        public async Task<IHttpActionResult> PostMission(CreateMissionDTO input)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
+            var mission = mapper.Map<Mission>(input);
             db.Missions.Add(mission);
 
             try

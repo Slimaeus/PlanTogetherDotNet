@@ -17,11 +17,11 @@ namespace PlanTogetherDotNetAPI.Controllers
     [RoutePrefix("api/Account")]
     public class AccountController : ApiController
     {
-        UserManager<AppUser> userManager;
-        public AccountController() 
+        private readonly UserManager<AppUser> userManager;
+
+        public AccountController(UserManager<AppUser> userManager) 
         {
-            UserStore<AppUser> store = new UserStore<AppUser>(new DataContext());
-            userManager = new UserManager<AppUser>(store);
+            this.userManager = userManager;
         }
 
         [Route("user-count")]

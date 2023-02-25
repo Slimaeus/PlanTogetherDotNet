@@ -5,9 +5,8 @@ using System.Web;
 
 namespace PlanTogetherDotNetAPI.Models
 {
-    public class Project
+    public class Project : Entity
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
         public string Name { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
