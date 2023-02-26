@@ -9,6 +9,11 @@ namespace PlanTogetherDotNetAPI.Data
     {
         public DataContext() : base(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString)
         {
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<DataContext, DataInitializer>());
+            Configuration.ProxyCreationEnabled = false;
+            Configuration.LazyLoadingEnabled = false;
+            Configuration.AutoDetectChangesEnabled = true;
+            Configuration.ValidateOnSaveEnabled = true;
         }
 
         public DbSet<Mission> Missions { get; set; }

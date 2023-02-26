@@ -1,4 +1,4 @@
-﻿namespace PlanTogetherDotNetAPI.Migrations
+﻿namespace PlanTogetherDotNetAPI.Data
 {
     using System;
     using System.Data.Entity.Migrations;
