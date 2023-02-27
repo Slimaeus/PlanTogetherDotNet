@@ -4,8 +4,10 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using PlanTogetherDotNetAPI.Data;
 using PlanTogetherDotNetAPI.Models;
 using PlanTogetherDotNetAPI.Profiles;
+using PlanTogetherDotNetAPI.Services;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
@@ -25,6 +27,9 @@ namespace PlanTogetherDotNetAPI
             var container = new UnityContainer(); //Init-Dependency-Injection
 
             container.RegisterType<DataContext>(new InjectionConstructor());
+
+            container.RegisterType<TokenService>(new InjectionConstructor());
+
             container.RegisterFactory<UserStore<AppUser>>(
                 c => new UserStore<AppUser>(c.Resolve<DataContext>())    
             );

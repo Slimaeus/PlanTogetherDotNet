@@ -10,6 +10,7 @@ namespace PlanTogetherDotNetAPI.Data
         public DataContext() : base(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString)
         {
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<DataContext, DataInitializer>());
+            //Database.SetInitializer(new DropCreateDatabaseAlways<DataContext>());
             Configuration.ProxyCreationEnabled = false;
             Configuration.LazyLoadingEnabled = false;
             Configuration.AutoDetectChangesEnabled = true;

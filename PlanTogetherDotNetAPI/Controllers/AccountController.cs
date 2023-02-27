@@ -1,16 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using PlanTogetherDotNetAPI.Data;
 using PlanTogetherDotNetAPI.DTOs;
 using PlanTogetherDotNetAPI.DTOs.Account;
 using PlanTogetherDotNetAPI.Models;
-using System;
-using System.Collections.Generic;
+using PlanTogetherDotNetAPI.Services;
 using System.Data.Entity;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 
@@ -21,18 +15,21 @@ namespace PlanTogetherDotNetAPI.Controllers
     {
         private readonly UserManager<AppUser> userManager;
         private readonly IMapper mapper;
+        private readonly TokenService tokenService;
 
-        public AccountController(UserManager<AppUser> userManager, IMapper mapper) 
+        public AccountController(UserManager<AppUser> userManager, IMapper mapper, TokenService tokenService) 
         {
             this.userManager = userManager;
             this.mapper = mapper;
+            this.tokenService = tokenService;
         }
 
-        public async Task<IHttpActionResult> GetCurrentUser()
+        public IHttpActionResult GetCurrentUser()
         {
             return Ok();
         }
 
+        [Authorize]
         [Route("user-count")]
         public async Task<IHttpActionResult> GetUserCountAsync()
         {
@@ -52,7 +49,9 @@ namespace PlanTogetherDotNetAPI.Controllers
             var result = await userManager.CreateAsync(user,input.Password);
             if(result.Succeeded)
             {
-                return Ok(mapper.Map<UserDTO>(user));
+                var dto = mapper.Map<UserDTO>(user);
+                dto.Token = tokenService.CreateToken(user);
+                return Ok(dto);
             }
             return BadRequest();
         }
@@ -66,7 +65,9 @@ namespace PlanTogetherDotNetAPI.Controllers
             {
                 return Unauthorized();
             }
-            return Ok(mapper.Map<UserDTO>(user));
+            var dto = mapper.Map<UserDTO>(user);
+            dto.Token = tokenService.CreateToken(user);
+            return Ok(dto);
         }
     }
 }
