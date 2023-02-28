@@ -16,6 +16,7 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using Unity;
 using Unity.Injection;
+using Unity.Lifetime;
 using Unity.WebApi;
 
 namespace PlanTogetherDotNetAPI
@@ -26,12 +27,12 @@ namespace PlanTogetherDotNetAPI
         {
             var container = new UnityContainer(); //Init-Dependency-Injection
 
-            container.RegisterType<DataContext>(new InjectionConstructor());
+            container.RegisterType<DataContext>(new HierarchicalLifetimeManager());
 
-            container.RegisterType<TokenService>(new InjectionConstructor());
+            container.RegisterType<TokenService>(new HierarchicalLifetimeManager());
 
             container.RegisterFactory<UserStore<AppUser>>(
-                c => new UserStore<AppUser>(c.Resolve<DataContext>())    
+                c => new UserStore<AppUser>(c.Resolve<DataContext>())
             );
             container.RegisterFactory<UserManager<AppUser>>(
                 c => new UserManager<AppUser>(c.Resolve<UserStore<AppUser>>())

@@ -97,6 +97,15 @@ namespace PlanTogetherDotNetAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
+            
+            var isNameTaken = await db.Projects
+                .AnyAsync(p => p.Name == input.Name);
+
+            if (isNameTaken)
+            {
+                ModelState.AddModelError(nameof(input.Name), "Name taken");
+                return BadRequest(ModelState);
+            }
 
             var group = await db.Groups
                 .Include(g => g.Projects)

@@ -24,9 +24,14 @@ namespace PlanTogetherDotNetAPI.Controllers
             this.tokenService = tokenService;
         }
 
-        public IHttpActionResult GetCurrentUser()
+        [Authorize]
+        public async Task<IHttpActionResult> GetCurrentUser()
         {
-            return Ok();
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            if (user == null) return BadRequest();
+            var dto = mapper.Map<UserDTO>(user);
+            dto.Token = tokenService.CreateToken(user);
+            return Ok(dto);
         }
 
         [Authorize]
