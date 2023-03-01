@@ -9,38 +9,58 @@ using System.Web.Http.Description;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using PlanTogetherDotNetAPI.Data;
+using PlanTogetherDotNetAPI.DTOs;
+using PlanTogetherDotNetAPI.DTOs.Common;
 using PlanTogetherDotNetAPI.DTOs.Group;
 using PlanTogetherDotNetAPI.Models;
 
 namespace PlanTogetherDotNetAPI.Controllers
 {
-    public class GroupsController : ApiController
+    public class GroupsController : BaseApiController
     {
-        private readonly DataContext db;
-        private readonly IMapper mapper;
-
-        public GroupsController(DataContext context, IMapper mapper)
+        public GroupsController(DataContext context, IMapper mapper) : base(context, mapper)
         {
-            db = context;
-            this.mapper = mapper;
         }
         // GET: api/Groups
-        public IQueryable<GroupDTO> GetGroups()
+        public IQueryable<GroupDTO> GetGroups([FromUri] PaginationParams @params)
         {
-            return db.Groups.ProjectTo<GroupDTO>(mapper.ConfigurationProvider);
+            if (@params.PageSize <= 0)
+                return Context.Groups.AsNoTracking().ProjectTo<GroupDTO>(Mapper.ConfigurationProvider);
+
+            var skipCount = ((@params.PageNumber > 1 ? @params.PageNumber : 1) - 1) * @params.PageSize;
+            var takeCount = @params.PageSize;
+
+            var query = Context.Groups.AsNoTracking().AsQueryable();
+
+            if (!string.IsNullOrEmpty(@params.SearchTerm))
+            {
+                query = query
+                    .Where(m => m.Title.ToLower().Contains(@params.SearchTerm.ToLower())
+                    || m.Description.ToLower().Contains(@params.SearchTerm.ToLower()));
+            }
+
+            return query
+                .OrderBy(m => m.CreateDate)
+                .Skip(skipCount)
+                .Take(takeCount)
+                .ProjectTo<GroupDTO>(Mapper.ConfigurationProvider);
         }
 
         // GET: api/Groups/5
         [ResponseType(typeof(GroupDTO))]
         public async Task<IHttpActionResult> GetGroup(Guid id)
         {
-            Group group = await db.Groups.FindAsync(id);
+            Group group = await Context.Groups
+                .AsNoTracking()
+                .Include(g => g.Projects)
+                .Include(g => g.Owner)
+                .FirstOrDefaultAsync(g => g.Id == id);
             if (group == null)
             {
                 return NotFound();
             }
 
-            return Ok(mapper.Map<GroupDTO>(group));
+            return Ok(Mapper.Map<GroupDTO>(group));
         }
 
         // PUT: api/Groups/5
@@ -57,15 +77,15 @@ namespace PlanTogetherDotNetAPI.Controllers
                 return BadRequest();
             }
 
-            var group = await db.Groups.FindAsync(id);
+            var group = await Context.Groups.FindAsync(id);
 
-            mapper.Map(input, group);
+            Mapper.Map(input, group);
 
-            db.Entry(group).State = EntityState.Modified;
+            Context.Entry(group).State = EntityState.Modified;
 
             try
             {
-                await db.SaveChangesAsync();
+                await Context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -91,7 +111,7 @@ namespace PlanTogetherDotNetAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var isNameTaken = await db.Groups
+            var isNameTaken = await Context.Groups
                 .AnyAsync(g => g.Name == input.Name);
 
             if (isNameTaken)
@@ -101,20 +121,20 @@ namespace PlanTogetherDotNetAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var user = await db.Users
+            var user = await Context.Users
                 .FirstOrDefaultAsync(u => u.UserName == input.UserName);
 
             if (user == null) return NotFound();
 
-            var group = mapper.Map<Group>(input);
+            var group = Mapper.Map<Group>(input);
 
             group.Owner = user;
 
-            db.Groups.Add(group);
+            Context.Groups.Add(group);
 
             try
             {
-                await db.SaveChangesAsync();
+                await Context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
@@ -128,37 +148,37 @@ namespace PlanTogetherDotNetAPI.Controllers
                 }
             }
 
-            return CreatedAtRoute("DefaultApi", new { id = group.Id }, mapper.Map<GroupDTO>(group));
+            return CreatedAtRoute("DefaultApi", new { id = group.Id }, Mapper.Map<GroupDTO>(group));
         }
 
         // DELETE: api/Groups/5
         [ResponseType(typeof(GroupDTO))]
         public async Task<IHttpActionResult> DeleteGroup(Guid id)
         {
-            Group group = await db.Groups.FindAsync(id);
+            Group group = await Context.Groups.FindAsync(id);
             if (group == null)
             {
                 return NotFound();
             }
 
-            db.Groups.Remove(group);
-            await db.SaveChangesAsync();
+            Context.Groups.Remove(group);
+            await Context.SaveChangesAsync();
 
-            return Ok(mapper.Map<GroupDTO>(group));
+            return Ok(Mapper.Map<GroupDTO>(group));
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                db.Dispose();
+                Context.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private bool GroupExists(Guid id)
         {
-            return db.Groups.Count(e => e.Id == id) > 0;
+            return Context.Groups.Count(e => e.Id == id) > 0;
         }
     }
 }

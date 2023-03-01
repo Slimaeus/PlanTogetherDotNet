@@ -13,33 +13,53 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using PlanTogetherDotNetAPI.Data;
 using PlanTogetherDotNetAPI.DTOs;
+using PlanTogetherDotNetAPI.DTOs.Common;
 using PlanTogetherDotNetAPI.Models;
 
 namespace PlanTogetherDotNetAPI.Controllers
 {
-    public class MissionsController : ApiController
+    public class MissionsController : BaseApiController
     {
-        private readonly DataContext db;
-        private readonly IMapper mapper;
-
-        public MissionsController(DataContext context, IMapper mapper)
+        public MissionsController(DataContext context, IMapper mapper) : base(context, mapper)
         {
-            db = context;
-            this.mapper = mapper;
         }
         // GET: api/Missions
-        public IQueryable<MissionDTO> GetMissions()
+        public IQueryable<MissionDTO> GetMissions([FromUri] PaginationParams @params)
         {
-            //var missions = mapper.Map<IQueryable<MissionDTO>>(db.Missions);
-            return db.Missions.ProjectTo<MissionDTO>(mapper.ConfigurationProvider);
+            if (@params.PageSize <= 0)
+                return Context.Missions.AsNoTracking().ProjectTo<MissionDTO>(Mapper.ConfigurationProvider);
+
+            var skipCount = ((@params.PageNumber > 1 ? @params.PageNumber : 1) - 1) * @params.PageSize;
+            var takeCount = @params.PageSize;
+
+            var query = Context.Missions.AsNoTracking().AsQueryable();
+
+            if (!string.IsNullOrEmpty(@params.SearchTerm))
+            {
+                query = query
+                    .Where(m => m.Title.ToLower().Contains(@params.SearchTerm.ToLower()) 
+                    || m.Description.ToLower().Contains(@params.SearchTerm.ToLower()));
+            }
+
+            return query
+                .OrderBy(m => m.CreateDate)
+                .Skip(skipCount)
+                .Take(takeCount)
+                .ProjectTo<MissionDTO>(Mapper.ConfigurationProvider);
         }
 
         // GET: api/Missions/5
         [ResponseType(typeof(MissionDTO))]
         public async Task<IHttpActionResult> GetMission(Guid id)
         {
-            Mission mission = await db.Missions.FindAsync(id);
-            MissionDTO missionDTO = mapper.Map<MissionDTO>(mission);
+            Mission mission = await Context.Missions
+                .AsNoTracking()
+                .Include(m => m.Comments)
+                .Include(m => m.Comments.Select(c => c.Owner))
+                .Include(m => m.MissionUsers)
+                .Include(m => m.MissionUsers.Select(mu => mu.User))
+                .FirstOrDefaultAsync(m => m.Id == id);
+            MissionDTO missionDTO = Mapper.Map<MissionDTO>(mission);
             if (mission == null)
             {
                 return NotFound();
@@ -61,13 +81,13 @@ namespace PlanTogetherDotNetAPI.Controllers
             {
                 return BadRequest();
             }
-            var mission = await db.Missions.FindAsync(id);
-            mapper.Map(input, mission);
-            db.Entry(mission).State = EntityState.Modified;
+            var mission = await Context.Missions.FindAsync(id);
+            Mapper.Map(input, mission);
+            Context.Entry(mission).State = EntityState.Modified;
 
             try
             {
-                await db.SaveChangesAsync();
+                await Context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -92,18 +112,18 @@ namespace PlanTogetherDotNetAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var project = await db.Projects
+            var project = await Context.Projects
                 .FirstOrDefaultAsync(p => p.Name == input.ProjectName);
 
             if (project == null) return NotFound();
 
-            var mission = mapper.Map<Mission>(input);
+            var mission = Mapper.Map<Mission>(input);
             mission.Project = project;
-            db.Missions.Add(mission);
+            Context.Missions.Add(mission);
 
             try
             {
-                await db.SaveChangesAsync();
+                await Context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
@@ -117,37 +137,28 @@ namespace PlanTogetherDotNetAPI.Controllers
                 }
             }
 
-            return CreatedAtRoute("DefaultApi", new { id = mission.Id }, mapper.Map<MissionDTO>(mission));
+            return CreatedAtRoute("DefaultApi", new { id = mission.Id }, Mapper.Map<MissionDTO>(mission));
         }
 
         // DELETE: api/Missions/5
-        [ResponseType(typeof(Mission))]
+        [ResponseType(typeof(MissionDTO))]
         public async Task<IHttpActionResult> DeleteMission(Guid id)
         {
-            Mission mission = await db.Missions.FindAsync(id);
+            Mission mission = await Context.Missions.FindAsync(id);
             if (mission == null)
             {
                 return NotFound();
             }
 
-            db.Missions.Remove(mission);
-            await db.SaveChangesAsync();
+            Context.Missions.Remove(mission);
+            await Context.SaveChangesAsync();
 
-            return Ok(mission);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
+            return Ok(Mapper.Map<MissionDTO>(mission));
         }
 
         private bool MissionExists(Guid id)
         {
-            return db.Missions.Count(e => e.Id == id) > 0;
+            return Context.Missions.Count(e => e.Id == id) > 0;
         }
     }
 }

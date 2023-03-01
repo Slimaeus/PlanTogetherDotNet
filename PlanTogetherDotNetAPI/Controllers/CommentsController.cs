@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -13,39 +11,56 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using PlanTogetherDotNetAPI.Data;
 using PlanTogetherDotNetAPI.DTOs.Comments;
+using PlanTogetherDotNetAPI.DTOs.Common;
 using PlanTogetherDotNetAPI.Models;
 
 namespace PlanTogetherDotNetAPI.Controllers
 {
-    public class CommentsController : ApiController
+    public class CommentsController : BaseApiController
     {
-        private readonly DataContext db;
-        private readonly IMapper mapper;
-
-        public CommentsController(DataContext db, IMapper mapper)
+        public CommentsController(DataContext context, IMapper mapper) : base(context, mapper)
         {
-            this.db = db;
-            this.mapper = mapper;
         }
 
 
         // GET: api/Comments
-        public IQueryable<CommentDTO> GetComments()
+        public IQueryable<CommentDTO> GetComments([FromUri] PaginationParams @params)
         {
-            return db.Comments.ProjectTo<CommentDTO>(mapper.ConfigurationProvider);
+            if (@params.PageSize <= 0)
+                return Context.Comments.AsNoTracking().ProjectTo<CommentDTO>(Mapper.ConfigurationProvider);
+
+            var skipCount = ((@params.PageNumber > 1 ? @params.PageNumber : 1) - 1) * @params.PageSize;
+            var takeCount = @params.PageSize;
+
+            var query = Context.Comments.AsNoTracking().AsQueryable();
+
+            if (!string.IsNullOrEmpty(@params.SearchTerm))
+            {
+                query = query
+                    .Where(m => m.Content.ToLower().Contains(@params.SearchTerm.ToLower()));
+            }
+
+            return query
+                .OrderBy(m => m.CreateDate)
+                .Skip(skipCount)
+                .Take(takeCount)
+                .ProjectTo<CommentDTO>(Mapper.ConfigurationProvider);
         }
 
         // GET: api/Comments/5
         [ResponseType(typeof(CommentDTO))]
         public async Task<IHttpActionResult> GetComment(Guid id)
         {
-            Comment comment = await db.Comments.FindAsync(id);
+            Comment comment = await Context.Comments
+                .AsNoTracking()
+                .Include(c => c.Owner)
+                .FirstOrDefaultAsync(c => c.Id == id);
             if (comment == null)
             {
                 return NotFound();
             }
 
-            return Ok(mapper.Map<CommentDTO>(comment));
+            return Ok(Mapper.Map<CommentDTO>(comment));
         }
 
         // PUT: api/Comments/5
@@ -61,13 +76,13 @@ namespace PlanTogetherDotNetAPI.Controllers
             {
                 return BadRequest();
             }
-            var comment = await db.Comments.FindAsync(id);
-            mapper.Map(input, comment);
-            db.Entry(comment).State = EntityState.Modified;
+            var comment = await Context.Comments.FindAsync(id);
+            Mapper.Map(input, comment);
+            Context.Entry(comment).State = EntityState.Modified;
 
             try
             {
-                await db.SaveChangesAsync();
+                await Context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -93,27 +108,27 @@ namespace PlanTogetherDotNetAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var mission = await db.Missions
+            var mission = await Context.Missions
                 .FirstOrDefaultAsync(m => m.Id == input.MissionId);
 
             if (mission == null) return NotFound();
 
-            var user = await db.Users
+            var user = await Context.Users
                 .FirstOrDefaultAsync(m => m.UserName == input.UserName);
 
             if (user == null) return NotFound();
 
-            var comment = mapper.Map<Comment>(input);
+            var comment = Mapper.Map<Comment>(input);
 
             comment.Mission = mission;
-            
+
             comment.Owner = user;
 
-            db.Comments.Add(comment);
+            Context.Comments.Add(comment);
 
             try
             {
-                await db.SaveChangesAsync();
+                await Context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
@@ -127,37 +142,37 @@ namespace PlanTogetherDotNetAPI.Controllers
                 }
             }
 
-            return CreatedAtRoute("DefaultApi", new { id = comment.Id }, mapper.Map<CommentDTO>(comment));
+            return CreatedAtRoute("DefaultApi", new { id = comment.Id }, Mapper.Map<CommentDTO>(comment));
         }
 
         // DELETE: api/Comments/5
         [ResponseType(typeof(CommentDTO))]
         public async Task<IHttpActionResult> DeleteComment(Guid id)
         {
-            Comment comment = await db.Comments.FindAsync(id);
+            Comment comment = await Context.Comments.FindAsync(id);
             if (comment == null)
             {
                 return NotFound();
             }
 
-            db.Comments.Remove(comment);
-            await db.SaveChangesAsync();
+            Context.Comments.Remove(comment);
+            await Context.SaveChangesAsync();
 
-            return Ok(mapper.Map<CommentDTO>(comment));
+            return Ok(Mapper.Map<CommentDTO>(comment));
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                db.Dispose();
+                Context.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private bool CommentExists(Guid id)
         {
-            return db.Comments.Count(e => e.Id == id) > 0;
+            return Context.Comments.Count(e => e.Id == id) > 0;
         }
     }
 }
