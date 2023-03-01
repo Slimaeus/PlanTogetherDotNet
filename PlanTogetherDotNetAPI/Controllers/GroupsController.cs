@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -105,14 +102,13 @@ namespace PlanTogetherDotNetAPI.Controllers
             }
 
             var user = await db.Users
-                .Include(u => u.Groups)
                 .FirstOrDefaultAsync(u => u.UserName == input.UserName);
 
             if (user == null) return NotFound();
 
             var group = mapper.Map<Group>(input);
 
-            user.Groups.Add(group);
+            group.Owner = user;
 
             db.Groups.Add(group);
 

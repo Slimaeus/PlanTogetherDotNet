@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using PlanTogetherDotNetAPI.DTOs;
 using PlanTogetherDotNetAPI.DTOs.Account;
+using PlanTogetherDotNetAPI.DTOs.Comments;
 using PlanTogetherDotNetAPI.DTOs.Common;
 using PlanTogetherDotNetAPI.DTOs.Group;
 using PlanTogetherDotNetAPI.DTOs.Project;
@@ -42,6 +43,18 @@ namespace PlanTogetherDotNetAPI.Profiles
             CreateMap<CreateGroupDTO, Group>();
 
             CreateMap<EditGroupDTO, Group>()
+                .ForAllMembers(options =>
+                {
+                    options.Condition((src, des, srcValue, desValue) => srcValue != null);
+                });
+            #endregion
+
+            #region Comment
+            CreateMap<Comment, CommentDTO>();
+
+            CreateMap<CreateCommentDTO, Comment>();
+
+            CreateMap<EditCommentDTO, Comment>()
                 .ForAllMembers(options =>
                 {
                     options.Condition((src, des, srcValue, desValue) => srcValue != null);

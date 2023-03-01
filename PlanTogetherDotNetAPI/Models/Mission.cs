@@ -1,10 +1,6 @@
-﻿using Newtonsoft.Json;
-using PlanTogetherDotNetAPI.Enums;
+﻿using PlanTogetherDotNetAPI.Enums;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Xml.Linq;
 
 namespace PlanTogetherDotNetAPI.Models
 {
@@ -21,6 +17,7 @@ namespace PlanTogetherDotNetAPI.Models
         public Guid ProjectId { get; set; }
         public Project Project { get; set; }
 
-        public ICollection<MissionUser> MissionUsers { get; set; }
+        public ICollection<MissionUser> MissionUsers { get; set; } = new HashSet<MissionUser>();
+        public ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
     }
 }

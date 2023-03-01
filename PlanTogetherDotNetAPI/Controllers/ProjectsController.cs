@@ -108,13 +108,12 @@ namespace PlanTogetherDotNetAPI.Controllers
             }
 
             var group = await db.Groups
-                .Include(g => g.Projects)
                 .FirstOrDefaultAsync(g => g.Name == input.GroupName);
 
             if (group == null) return NotFound();
 
             var project = mapper.Map<Project>(input);
-            group.Projects.Add(project);
+            project.Group = group;
             db.Projects.Add(project);
 
             try

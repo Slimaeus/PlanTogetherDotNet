@@ -1,4 +1,5 @@
-﻿using PlanTogetherDotNetAPI.Enums;
+﻿using PlanTogetherDotNetAPI.DTOs.Comments;
+using PlanTogetherDotNetAPI.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -18,5 +19,6 @@ namespace PlanTogetherDotNetAPI.DTOs
         public DateTime EndDate { get; set; } 
         public DateTime CompletedDate { get; set; } 
         public DateTime CreateDate { get; set; }
+        public ICollection<CommentDTO> Comments { get; set; } = new HashSet<CommentDTO>();
     }
 }

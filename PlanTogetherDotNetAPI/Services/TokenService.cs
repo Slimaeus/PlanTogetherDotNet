@@ -25,21 +25,6 @@ namespace PlanTogetherDotNetAPI.Services
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_tokenKey));
             _signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
         }
-
-        public string CreateToken(ClaimsIdentity claimsIdentity)
-        {
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = claimsIdentity,
-                Expires = DateTime.UtcNow.Add(_tokenLifespan),
-                SigningCredentials = _signingCredentials
-            };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-
-            return tokenHandler.WriteToken(token);
-        }
         public string CreateToken(AppUser user)
         {
             var claims = new Claim[]

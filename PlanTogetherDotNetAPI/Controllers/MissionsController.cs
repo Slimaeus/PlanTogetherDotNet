@@ -93,13 +93,12 @@ namespace PlanTogetherDotNetAPI.Controllers
                 return BadRequest(ModelState);
             }
             var project = await db.Projects
-                .Include(p => p.Missions)
                 .FirstOrDefaultAsync(p => p.Name == input.ProjectName);
 
             if (project == null) return NotFound();
 
             var mission = mapper.Map<Mission>(input);
-            project.Missions.Add(mission);
+            mission.Project = project;
             db.Missions.Add(mission);
 
             try

@@ -2,14 +2,10 @@
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Jwt;
 using Owin;
-using System;
 using System.Configuration;
 using System.Text;
-using System.Threading.Tasks;
-using System.Web.Http;
 
 [assembly: OwinStartup(typeof(PlanTogetherDotNetAPI.Startup))]
-
 namespace PlanTogetherDotNetAPI
 {
     public class Startup
