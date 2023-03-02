@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
@@ -8,7 +7,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using PlanTogetherDotNetAPI.Data;
 using PlanTogetherDotNetAPI.DTOs.Comments;
 using PlanTogetherDotNetAPI.DTOs.Common;
@@ -16,36 +14,17 @@ using PlanTogetherDotNetAPI.Models;
 
 namespace PlanTogetherDotNetAPI.Controllers
 {
-    public class CommentsController : BaseApiController
+    public class CommentsController : BaseApiController<Comment, CommentDTO>
     {
         public CommentsController(DataContext context, IMapper mapper) : base(context, mapper)
         {
         }
 
-
         // GET: api/Comments
-        public IQueryable<CommentDTO> GetComments([FromUri] PaginationParams @params)
-        {
-            if (@params.PageSize <= 0)
-                return Context.Comments.AsNoTracking().ProjectTo<CommentDTO>(Mapper.ConfigurationProvider);
-
-            var skipCount = ((@params.PageNumber > 1 ? @params.PageNumber : 1) - 1) * @params.PageSize;
-            var takeCount = @params.PageSize;
-
-            var query = Context.Comments.AsNoTracking().AsQueryable();
-
-            if (!string.IsNullOrEmpty(@params.SearchTerm))
-            {
-                query = query
-                    .Where(m => m.Content.ToLower().Contains(@params.SearchTerm.ToLower()));
-            }
-
-            return query
-                .OrderBy(m => m.CreateDate)
-                .Skip(skipCount)
-                .Take(takeCount)
-                .ProjectTo<CommentDTO>(Mapper.ConfigurationProvider);
-        }
+        public IQueryable<CommentDTO> GetProjects([FromUri(Name = "")] PaginationParams @params)
+            => Get(
+                @params, p => p.Content.ToLower().Contains(@params.SearchTerm.ToLower())
+            );
 
         // GET: api/Comments/5
         [ResponseType(typeof(CommentDTO))]
@@ -147,32 +126,10 @@ namespace PlanTogetherDotNetAPI.Controllers
 
         // DELETE: api/Comments/5
         [ResponseType(typeof(CommentDTO))]
-        public async Task<IHttpActionResult> DeleteComment(Guid id)
-        {
-            Comment comment = await Context.Comments.FindAsync(id);
-            if (comment == null)
-            {
-                return NotFound();
-            }
-
-            Context.Comments.Remove(comment);
-            await Context.SaveChangesAsync();
-
-            return Ok(Mapper.Map<CommentDTO>(comment));
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                Context.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+        public Task<IHttpActionResult> DeleteComment(Guid id)
+            => base.Delete(id);
 
         private bool CommentExists(Guid id)
-        {
-            return Context.Comments.Count(e => e.Id == id) > 0;
-        }
+            => base.EntityExists(id);
     }
 }

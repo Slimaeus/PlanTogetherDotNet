@@ -7,44 +7,23 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using PlanTogetherDotNetAPI.Data;
-using PlanTogetherDotNetAPI.DTOs;
 using PlanTogetherDotNetAPI.DTOs.Common;
 using PlanTogetherDotNetAPI.DTOs.Group;
 using PlanTogetherDotNetAPI.Models;
 
 namespace PlanTogetherDotNetAPI.Controllers
 {
-    public class GroupsController : BaseApiController
+    public class GroupsController : BaseApiController<Group, GroupDTO>
     {
         public GroupsController(DataContext context, IMapper mapper) : base(context, mapper)
         {
         }
         // GET: api/Groups
-        public IQueryable<GroupDTO> GetGroups([FromUri] PaginationParams @params)
-        {
-            if (@params.PageSize <= 0)
-                return Context.Groups.AsNoTracking().ProjectTo<GroupDTO>(Mapper.ConfigurationProvider);
-
-            var skipCount = ((@params.PageNumber > 1 ? @params.PageNumber : 1) - 1) * @params.PageSize;
-            var takeCount = @params.PageSize;
-
-            var query = Context.Groups.AsNoTracking().AsQueryable();
-
-            if (!string.IsNullOrEmpty(@params.SearchTerm))
-            {
-                query = query
-                    .Where(m => m.Title.ToLower().Contains(@params.SearchTerm.ToLower())
-                    || m.Description.ToLower().Contains(@params.SearchTerm.ToLower()));
-            }
-
-            return query
-                .OrderBy(m => m.CreateDate)
-                .Skip(skipCount)
-                .Take(takeCount)
-                .ProjectTo<GroupDTO>(Mapper.ConfigurationProvider);
-        }
+        public IQueryable<GroupDTO> GetProjects([FromUri(Name = "")] PaginationParams @params)
+            => Get(
+                @params, p => p.Name.ToLower().Contains(@params.SearchTerm.ToLower()) || p.Title.Contains(@params.SearchTerm.ToLower())
+            );
 
         // GET: api/Groups/5
         [ResponseType(typeof(GroupDTO))]
@@ -153,32 +132,10 @@ namespace PlanTogetherDotNetAPI.Controllers
 
         // DELETE: api/Groups/5
         [ResponseType(typeof(GroupDTO))]
-        public async Task<IHttpActionResult> DeleteGroup(Guid id)
-        {
-            Group group = await Context.Groups.FindAsync(id);
-            if (group == null)
-            {
-                return NotFound();
-            }
-
-            Context.Groups.Remove(group);
-            await Context.SaveChangesAsync();
-
-            return Ok(Mapper.Map<GroupDTO>(group));
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                Context.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+        public Task<IHttpActionResult> DeleteGroup(Guid id)
+            => base.Delete(id);
 
         private bool GroupExists(Guid id)
-        {
-            return Context.Groups.Count(e => e.Id == id) > 0;
-        }
+            => base.EntityExists(id);
     }
 }

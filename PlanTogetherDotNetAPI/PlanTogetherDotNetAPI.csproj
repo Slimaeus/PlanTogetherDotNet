@@ -259,6 +259,7 @@
     <Compile Include="DTOs\Comments\CreateCommentDTO.cs" />
     <Compile Include="DTOs\Comments\EditCommentDTO.cs" />
     <Compile Include="DTOs\Common\MemberDTO.cs" />
+    <Compile Include="DTOs\Common\PaginationHeader.cs" />
     <Compile Include="DTOs\Common\PaginationParams.cs" />
     <Compile Include="DTOs\Groups\CreateGroupDTO.cs" />
     <Compile Include="DTOs\Groups\EditGroupDTO.cs" />
@@ -274,6 +275,8 @@
     <Compile Include="DTOs\Projects\ProjectDTO.cs" />
     <Compile Include="Enums\MissionPriorities.cs" />
     <Compile Include="Enums\MissionStates.cs" />
+    <Compile Include="Extensions\HttpExtensions.cs" />
+    <Compile Include="Extensions\IQueryableExtensions.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

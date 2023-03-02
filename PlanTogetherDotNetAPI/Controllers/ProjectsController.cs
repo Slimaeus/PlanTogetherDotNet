@@ -18,36 +18,17 @@ using PlanTogetherDotNetAPI.Models;
 namespace PlanTogetherDotNetAPI.Controllers
 {
     [RoutePrefix("api/Projects")]
-    public class ProjectsController : BaseApiController
+    public class ProjectsController : BaseApiController<Project, ProjectDTO>
     {
         public ProjectsController(DataContext context, IMapper mapper) : base(context, mapper)
         {
         }
 
         // GET: api/Projects
-        public IQueryable<ProjectDTO> GetProjects([FromUri] PaginationParams @params)
-        {
-            if (@params.PageSize <= 0)
-                return Context.Projects.AsNoTracking().ProjectTo<ProjectDTO>(Mapper.ConfigurationProvider);
-
-            var skipCount = ((@params.PageNumber > 1 ? @params.PageNumber : 1) - 1) * @params.PageSize;
-            var takeCount = @params.PageSize;
-
-            var query = Context.Projects.AsNoTracking().AsQueryable();
-
-            if (!string.IsNullOrEmpty(@params.SearchTerm))
-            {
-                query = query
-                    .Where(m => m.Title.ToLower().Contains(@params.SearchTerm.ToLower())
-                    || m.Description.ToLower().Contains(@params.SearchTerm.ToLower()));
-            }
-
-            return query
-                .OrderBy(m => m.CreateDate)
-                .Skip(skipCount)
-                .Take(takeCount)
-                .ProjectTo<ProjectDTO>(Mapper.ConfigurationProvider);
-        }
+        public IQueryable<ProjectDTO> GetProjects([FromUri(Name = "")] PaginationParams @params)
+            => Get(
+                @params, p => p.Name.ToLower().Contains(@params.SearchTerm.ToLower()) || p.Title.Contains(@params.SearchTerm.ToLower())
+            );
 
         // GET: api/Projects/5
         [ResponseType(typeof(ProjectDTO))]
@@ -153,19 +134,8 @@ namespace PlanTogetherDotNetAPI.Controllers
 
         // DELETE: api/Projects/5
         [ResponseType(typeof(ProjectDTO))]
-        public async Task<IHttpActionResult> DeleteProject(Guid id)
-        {
-            Project project = await Context.Projects.FindAsync(id);
-            if (project == null)
-            {
-                return NotFound();
-            }
-
-            Context.Projects.Remove(project);
-            await Context.SaveChangesAsync();
-
-            return Ok(Mapper.Map<ProjectDTO>(project));
-        }
+        public Task<IHttpActionResult> DeleteProject(Guid id)
+            => base.Delete(id);
 
         [Route("{projectId}/add-mission/{missionId}")]
         public async Task<IHttpActionResult> PatchAddMission(Guid projectId, Guid missionId)
@@ -196,8 +166,6 @@ namespace PlanTogetherDotNetAPI.Controllers
         }
 
         private bool ProjectExists(Guid id)
-        {
-            return Context.Projects.Count(e => e.Id == id) > 0;
-        }
+            => base.EntityExists(id);
     }
 }

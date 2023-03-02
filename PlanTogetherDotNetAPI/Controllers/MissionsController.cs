@@ -4,49 +4,30 @@ using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
+using System.Web.ModelBinding;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using PlanTogetherDotNetAPI.Data;
 using PlanTogetherDotNetAPI.DTOs;
 using PlanTogetherDotNetAPI.DTOs.Common;
+using PlanTogetherDotNetAPI.Extensions;
 using PlanTogetherDotNetAPI.Models;
 
 namespace PlanTogetherDotNetAPI.Controllers
 {
-    public class MissionsController : BaseApiController
+    public class MissionsController : BaseApiController<Mission, MissionDTO>
     {
-        public MissionsController(DataContext context, IMapper mapper) : base(context, mapper)
-        {
-        }
+        public MissionsController(DataContext context, IMapper mapper) : base(context, mapper) {}
         // GET: api/Missions
-        public IQueryable<MissionDTO> GetMissions([FromUri] PaginationParams @params)
-        {
-            if (@params.PageSize <= 0)
-                return Context.Missions.AsNoTracking().ProjectTo<MissionDTO>(Mapper.ConfigurationProvider);
-
-            var skipCount = ((@params.PageNumber > 1 ? @params.PageNumber : 1) - 1) * @params.PageSize;
-            var takeCount = @params.PageSize;
-
-            var query = Context.Missions.AsNoTracking().AsQueryable();
-
-            if (!string.IsNullOrEmpty(@params.SearchTerm))
-            {
-                query = query
-                    .Where(m => m.Title.ToLower().Contains(@params.SearchTerm.ToLower()) 
-                    || m.Description.ToLower().Contains(@params.SearchTerm.ToLower()));
-            }
-
-            return query
-                .OrderBy(m => m.CreateDate)
-                .Skip(skipCount)
-                .Take(takeCount)
-                .ProjectTo<MissionDTO>(Mapper.ConfigurationProvider);
-        }
+        public IQueryable<MissionDTO> GetMissions([FromUri(Name = "")] PaginationParams @params)
+            => base.Get(@params, m => m.Title.ToLower().Contains(@params.SearchTerm.ToLower()) | m.Description.Contains(@params.SearchTerm.ToLower()));
 
         // GET: api/Missions/5
         [ResponseType(typeof(MissionDTO))]
@@ -142,23 +123,10 @@ namespace PlanTogetherDotNetAPI.Controllers
 
         // DELETE: api/Missions/5
         [ResponseType(typeof(MissionDTO))]
-        public async Task<IHttpActionResult> DeleteMission(Guid id)
-        {
-            Mission mission = await Context.Missions.FindAsync(id);
-            if (mission == null)
-            {
-                return NotFound();
-            }
-
-            Context.Missions.Remove(mission);
-            await Context.SaveChangesAsync();
-
-            return Ok(Mapper.Map<MissionDTO>(mission));
-        }
+        public Task<IHttpActionResult> DeleteMission(Guid id)
+            => base.Delete(id);
 
         private bool MissionExists(Guid id)
-        {
-            return Context.Missions.Count(e => e.Id == id) > 0;
-        }
+            => base.EntityExists(id);
     }
 }

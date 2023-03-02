@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace PlanTogetherDotNetAPI.DTOs.Common
 {
     public class PaginationParams
     {
+        [JsonProperty("query")]
         public string SearchTerm { set; get; }
         private const int _maxPageSize = 50;
         private const int _minPageSize = 1;
+        [JsonProperty("page")]
         public int PageNumber { get; set; } = 1;
         private int _pageSize = 10;
+        [JsonProperty("size")]
         public int PageSize
         {
             get => _pageSize;
