@@ -1,4 +1,5 @@
-﻿using PlanTogetherDotNetAPI.DTOs.Comments;
+﻿using Newtonsoft.Json;
+using PlanTogetherDotNetAPI.DTOs.Comments;
 using PlanTogetherDotNetAPI.DTOs.Common;
 using PlanTogetherDotNetAPI.Enums;
 using PlanTogetherDotNetAPI.Models;
@@ -21,6 +22,7 @@ namespace PlanTogetherDotNetAPI.DTOs
         public DateTime EndDate { get; set; } 
         public DateTime CompletedDate { get; set; } 
         public DateTime CreateDate { get; set; }
+        [JsonProperty("Members")]
         public ICollection<MemberDTO> MissionUsers { get; set; } = new HashSet<MemberDTO>();
         public ICollection<CommentDTO> Comments { get; set; } = new HashSet<CommentDTO>();
     }

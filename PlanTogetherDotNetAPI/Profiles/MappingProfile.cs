@@ -38,6 +38,9 @@ namespace PlanTogetherDotNetAPI.Profiles
                 {
                     options.Condition((src, des, srcValue, desValue) => srcValue != null);
                 });
+            CreateMap<ProjectUser, MemberDTO>()
+                .ForMember(des => des.UserName, mu => mu.MapFrom(m => m.User.UserName))
+                .ForMember(des => des.DisplayName, mu => mu.MapFrom(m => m.User.DisplayName));
             #endregion
 
             #region Group

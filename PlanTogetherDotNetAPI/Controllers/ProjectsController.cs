@@ -137,34 +137,100 @@ namespace PlanTogetherDotNetAPI.Controllers
         public Task<IHttpActionResult> DeleteProject(Guid id)
             => base.Delete(id);
 
-        [Route("{projectId}/add-mission/{missionId}")]
-        public async Task<IHttpActionResult> PatchAddMission(Guid projectId, Guid missionId)
+        [Route("{name}/add-member/{username}")]
+        public async Task<IHttpActionResult> PatchAddMember(string name, string username)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await Context.Users
+                .FirstOrDefaultAsync(u => u.UserName == username);
+
+            if (user == null) return NotFound();
+
             var project = await Context.Projects
-                .Include(p => p.Missions)
-                .FirstOrDefaultAsync(p => p.Id == projectId);
+                .Include(m => m.ProjectUsers)
+                .FirstOrDefaultAsync(m => m.Name == name);
 
             if (project == null) return NotFound();
 
-            var isMissionExists = project.Missions
-                .Any(m => m.Id == missionId);
+            var member = project.ProjectUsers.FirstOrDefault(m => m.UserId == user.Id);
 
-            if (isMissionExists) return BadRequest();
+            if (member != null)
+            {
+                ModelState.AddModelError("Member", "User already added");
+                return BadRequest(ModelState);
+            }
 
-            var mission = await Context.Missions
-                .FirstOrDefaultAsync(m => m.Id == missionId);
+            project.ProjectUsers.Add(new ProjectUser { User = user });
 
-            if (mission == null) return NotFound();
+            try
+            {
+                await Context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ProjectExists(project.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
-            project.Missions.Add(mission);
-
-            var success = await Context.SaveChangesAsync() > 0;
-
-            if (success) return Ok();
-
-            return BadRequest();
+            return StatusCode(HttpStatusCode.NoContent);
         }
+        [Route("{name}/remove-member/{username}")]
+        public async Task<IHttpActionResult> PatchRemoveMember(string name, string username)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
+            var user = await Context.Users
+                .FirstOrDefaultAsync(u => u.UserName == username);
+
+            if (user == null) return NotFound();
+
+            var project = await Context.Projects
+                .Include(m => m.ProjectUsers)
+                .FirstOrDefaultAsync(m => m.Name == name);
+
+            if (project == null) return NotFound();
+
+            var member = project.ProjectUsers.FirstOrDefault(m => m.UserId == user.Id);
+
+            if (member == null)
+            {
+                ModelState.AddModelError("Member", "User did not add");
+                return BadRequest(ModelState);
+            }
+
+            project.ProjectUsers.Remove(member);
+
+            try
+            {
+                await Context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ProjectExists(project.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return StatusCode(HttpStatusCode.NoContent);
+        }
         private bool ProjectExists(Guid id)
             => base.EntityExists(id);
     }
