@@ -21,6 +21,7 @@ namespace PlanTogetherDotNetAPI.Data
         public DbSet<Project> Projects { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<MissionUser> MissionUsers { get; set; }
+        public DbSet<ProjectUser> ProjectUsers { get; set; }
         public DbSet<Comment> Comments { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -29,6 +30,9 @@ namespace PlanTogetherDotNetAPI.Data
 
             modelBuilder.Entity<MissionUser>()
                 .HasKey(mu => new { mu.UserId, mu.MissionId });
+
+            modelBuilder.Entity<ProjectUser>()
+                .HasKey(mu => new { mu.UserId, mu.ProjectId });
 
         }
     }

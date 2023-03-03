@@ -1,7 +1,5 @@
 ﻿using Newtonsoft.Json;
 using PlanTogetherDotNetAPI.DTOs.Common;
-using System.IO;
-using System.Linq;
 using System.Web;
 
 namespace PlanTogetherDotNetAPI.Extensions

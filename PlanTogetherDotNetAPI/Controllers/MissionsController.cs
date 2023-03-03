@@ -17,19 +17,19 @@ using AutoMapper.QueryableExtensions;
 using PlanTogetherDotNetAPI.Data;
 using PlanTogetherDotNetAPI.DTOs;
 using PlanTogetherDotNetAPI.DTOs.Common;
+using PlanTogetherDotNetAPI.DTOs.Missions;
 using PlanTogetherDotNetAPI.Extensions;
 using PlanTogetherDotNetAPI.Models;
 
 namespace PlanTogetherDotNetAPI.Controllers
 {
+    [RoutePrefix("api/Missions")]
     public class MissionsController : BaseApiController<Mission, MissionDTO>
     {
         public MissionsController(DataContext context, IMapper mapper) : base(context, mapper) {}
-        // GET: api/Missions
         public IQueryable<MissionDTO> GetMissions([FromUri(Name = "")] PaginationParams @params)
             => base.Get(@params, m => m.Title.ToLower().Contains(@params.SearchTerm.ToLower()) | m.Description.Contains(@params.SearchTerm.ToLower()));
 
-        // GET: api/Missions/5
         [ResponseType(typeof(MissionDTO))]
         public async Task<IHttpActionResult> GetMission(Guid id)
         {
@@ -49,7 +49,6 @@ namespace PlanTogetherDotNetAPI.Controllers
             return Ok(missionDTO);
         }
 
-        // PUT: api/Missions/5
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutMission(Guid id, EditMissionDTO input)
         {
@@ -85,7 +84,6 @@ namespace PlanTogetherDotNetAPI.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/Missions
         [ResponseType(typeof(MissionDTO))]
         public async Task<IHttpActionResult> PostMission(CreateMissionDTO input)
         {
@@ -121,10 +119,105 @@ namespace PlanTogetherDotNetAPI.Controllers
             return CreatedAtRoute("DefaultApi", new { id = mission.Id }, Mapper.Map<MissionDTO>(mission));
         }
 
-        // DELETE: api/Missions/5
         [ResponseType(typeof(MissionDTO))]
         public Task<IHttpActionResult> DeleteMission(Guid id)
             => base.Delete(id);
+
+        [Route("{id}/add-member/{username}")]
+        public async Task<IHttpActionResult> PatchAddMember(Guid id, string username)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await Context.Users
+                .FirstOrDefaultAsync(u => u.UserName == username);
+
+            if (user == null) return NotFound();
+
+            var mission = await Context.Missions
+                .Include(m => m.MissionUsers)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (mission == null) return NotFound();
+
+            var member = mission.MissionUsers.FirstOrDefault(m => m.UserId == user.Id);
+
+            if (member != null)
+            {
+                ModelState.AddModelError("Member", "User already added");
+                return BadRequest(ModelState);
+            }
+
+            mission.MissionUsers.Add(new MissionUser { User = user });
+
+            try
+            {
+                await Context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!MissionExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return StatusCode(HttpStatusCode.NoContent);
+        }
+
+        [Route("{id}/remove-member/{username}")]
+        public async Task<IHttpActionResult> PatchRemoveMember(Guid id, string username)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await Context.Users
+                .FirstOrDefaultAsync(u => u.UserName == username);
+
+            if (user == null) return NotFound();
+
+            var mission = await Context.Missions
+                .Include(m => m.MissionUsers)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (mission == null) return NotFound();
+
+            var member = mission.MissionUsers.FirstOrDefault(m => m.UserId == user.Id);
+
+            if (member == null)
+            {
+                ModelState.AddModelError("Member", "User did not add");
+                return BadRequest(ModelState);
+            }
+
+            mission.MissionUsers.Remove(member);
+
+            try
+            {
+                await Context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!MissionExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return StatusCode(HttpStatusCode.NoContent);
+        }
 
         private bool MissionExists(Guid id)
             => base.EntityExists(id);
