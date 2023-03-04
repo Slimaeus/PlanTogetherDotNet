@@ -28,7 +28,7 @@ namespace PlanTogetherDotNetAPI.Controllers
     {
         public MissionsController(DataContext context, IMapper mapper) : base(context, mapper) {}
         public IQueryable<MissionDTO> GetMissions([FromUri(Name = "")] PaginationParams @params)
-            => base.Get(@params, m => m.Title.ToLower().Contains(@params.SearchTerm.ToLower()) | m.Description.Contains(@params.SearchTerm.ToLower()));
+            => base.Get(@params, m => m.Title.ToLower().Contains(@params.SearchTerm.ToLower()) || m.Description.Contains(@params.SearchTerm.ToLower()));
 
         [ResponseType(typeof(MissionDTO))]
         public async Task<IHttpActionResult> GetMission(Guid id)
