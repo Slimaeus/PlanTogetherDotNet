@@ -2,6 +2,7 @@
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Jwt;
 using Owin;
+using PlanTogetherDotNetAPI.Middlewares;
 using System.Configuration;
 using System.Text;
 
@@ -27,6 +28,7 @@ namespace PlanTogetherDotNetAPI
                 }
             };
             app.UseJwtBearerAuthentication(options);
+            //app.Use(typeof(ExceptionMiddleware));
         }
     }
 }

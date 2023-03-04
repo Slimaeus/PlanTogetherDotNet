@@ -252,6 +252,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MissionsController.cs" />
     <Compile Include="Controllers\ProjectsController.cs" />
+    <Compile Include="Controllers\ResultsController.cs" />
     <Compile Include="Data\DataContext.cs" />
     <Compile Include="Data\DataInitializer.cs" />
     <Compile Include="DTOs\Account\UserDTO.cs" />
@@ -281,6 +282,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Middlewares\ExceptionMiddleware.cs" />
     <Compile Include="Migrations\202302261431533_Init.cs" />
     <Compile Include="Migrations\202302261431533_Init.designer.cs">
       <DependentUpon>202302261431533_Init.cs</DependentUpon>
