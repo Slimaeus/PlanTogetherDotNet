@@ -282,7 +282,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Middlewares\ExceptionMiddleware.cs" />
     <Compile Include="Migrations\202302261431533_Init.cs" />
     <Compile Include="Migrations\202302261431533_Init.designer.cs">
       <DependentUpon>202302261431533_Init.cs</DependentUpon>
