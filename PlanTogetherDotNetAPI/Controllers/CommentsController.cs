@@ -17,14 +17,10 @@ namespace PlanTogetherDotNetAPI.Controllers
     public class CommentsController : BaseApiController<Comment, CommentDTO>
     {
         public CommentsController(DataContext context, IMapper mapper) : base(context, mapper) {}
-
-        // GET: api/Comments
         public IQueryable<CommentDTO> GetProjects([FromUri(Name = "")] PaginationParams @params)
             => Get(
                 @params, p => p.Content.ToLower().Contains(@params.SearchTerm.ToLower())
             );
-
-        // GET: api/Comments/5
         [ResponseType(typeof(CommentDTO))]
         public async Task<IHttpActionResult> GetComment(Guid id)
         {
@@ -39,8 +35,6 @@ namespace PlanTogetherDotNetAPI.Controllers
 
             return Ok(Mapper.Map<CommentDTO>(comment));
         }
-
-        // PUT: api/Comments/5
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutComment(Guid id, EditCommentDTO input)
         {
@@ -75,8 +69,6 @@ namespace PlanTogetherDotNetAPI.Controllers
 
             return StatusCode(HttpStatusCode.NoContent);
         }
-
-        // POST: api/Comments
         [ResponseType(typeof(CommentDTO))]
         public async Task<IHttpActionResult> PostComment(CreateCommentDTO input)
         {
@@ -121,12 +113,9 @@ namespace PlanTogetherDotNetAPI.Controllers
 
             return CreatedAtRoute("DefaultApi", new { id = comment.Id }, Mapper.Map<CommentDTO>(comment));
         }
-
-        // DELETE: api/Comments/5
         [ResponseType(typeof(CommentDTO))]
         public Task<IHttpActionResult> DeleteComment(Guid id)
             => base.Delete(id);
-
         private bool CommentExists(Guid id)
             => base.EntityExists(id);
     }

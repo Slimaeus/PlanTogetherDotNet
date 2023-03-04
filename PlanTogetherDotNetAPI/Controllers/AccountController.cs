@@ -23,7 +23,6 @@ namespace PlanTogetherDotNetAPI.Controllers
             this.mapper = mapper;
             this.tokenService = tokenService;
         }
-
         [Authorize]
         public async Task<IHttpActionResult> GetCurrentUser()
         {
@@ -33,7 +32,6 @@ namespace PlanTogetherDotNetAPI.Controllers
             dto.Token = tokenService.CreateToken(user);
             return Ok(dto);
         }
-
         [Authorize]
         [Route("user-count")]
         public async Task<IHttpActionResult> GetUserCountAsync()
@@ -41,7 +39,6 @@ namespace PlanTogetherDotNetAPI.Controllers
             var count = await userManager.Users.CountAsync();
             return Ok(count);
         }
-
         [Route("register")]
         public async Task<IHttpActionResult> PostRegisterAsync(RegisterDTO input)
         {
@@ -60,7 +57,6 @@ namespace PlanTogetherDotNetAPI.Controllers
             }
             return BadRequest();
         }
-
         [Route("login")]
         public async Task<IHttpActionResult> PostLoginAsync(LoginDTO lg)
         {

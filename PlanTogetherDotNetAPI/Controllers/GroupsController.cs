@@ -17,13 +17,10 @@ namespace PlanTogetherDotNetAPI.Controllers
     public class GroupsController : BaseApiController<Group, GroupDTO>
     {
         public GroupsController(DataContext context, IMapper mapper) : base(context, mapper) {}
-        // GET: api/Groups
         public IQueryable<GroupDTO> GetProjects([FromUri(Name = "")] PaginationParams @params)
             => Get(
                 @params, p => p.Name.ToLower().Contains(@params.SearchTerm.ToLower()) || p.Title.Contains(@params.SearchTerm.ToLower())
             );
-
-        // GET: api/Groups/5
         [ResponseType(typeof(GroupDTO))]
         public async Task<IHttpActionResult> GetGroup(Guid id)
         {
@@ -39,8 +36,6 @@ namespace PlanTogetherDotNetAPI.Controllers
 
             return Ok(Mapper.Map<GroupDTO>(group));
         }
-
-        // PUT: api/Groups/5
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutGroup(Guid id, EditGroupDTO input)
         {
@@ -78,8 +73,6 @@ namespace PlanTogetherDotNetAPI.Controllers
 
             return StatusCode(HttpStatusCode.NoContent);
         }
-
-        // POST: api/Groups
         [ResponseType(typeof(GroupDTO))]
         public async Task<IHttpActionResult> PostGroup(CreateGroupDTO input)
         {
@@ -127,8 +120,6 @@ namespace PlanTogetherDotNetAPI.Controllers
 
             return CreatedAtRoute("DefaultApi", new { id = group.Id }, Mapper.Map<GroupDTO>(group));
         }
-
-        // DELETE: api/Groups/5
         [ResponseType(typeof(GroupDTO))]
         public Task<IHttpActionResult> DeleteGroup(Guid id)
             => base.Delete(id);

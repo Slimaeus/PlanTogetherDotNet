@@ -29,7 +29,6 @@ namespace PlanTogetherDotNetAPI.Controllers
         public MissionsController(DataContext context, IMapper mapper) : base(context, mapper) {}
         public IQueryable<MissionDTO> GetMissions([FromUri(Name = "")] PaginationParams @params)
             => base.Get(@params, m => m.Title.ToLower().Contains(@params.SearchTerm.ToLower()) || m.Description.Contains(@params.SearchTerm.ToLower()));
-
         [ResponseType(typeof(MissionDTO))]
         public async Task<IHttpActionResult> GetMission(Guid id)
         {
@@ -48,7 +47,6 @@ namespace PlanTogetherDotNetAPI.Controllers
 
             return Ok(missionDTO);
         }
-
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutMission(Guid id, EditMissionDTO input)
         {
@@ -83,7 +81,6 @@ namespace PlanTogetherDotNetAPI.Controllers
 
             return StatusCode(HttpStatusCode.NoContent);
         }
-
         [ResponseType(typeof(MissionDTO))]
         public async Task<IHttpActionResult> PostMission(CreateMissionDTO input)
         {
@@ -118,11 +115,9 @@ namespace PlanTogetherDotNetAPI.Controllers
 
             return CreatedAtRoute("DefaultApi", new { id = mission.Id }, Mapper.Map<MissionDTO>(mission));
         }
-
         [ResponseType(typeof(MissionDTO))]
         public Task<IHttpActionResult> DeleteMission(Guid id)
             => base.Delete(id);
-
         [Route("{id}/add-member/{username}")]
         public async Task<IHttpActionResult> PatchAddMember(Guid id, string username)
         {
@@ -170,7 +165,6 @@ namespace PlanTogetherDotNetAPI.Controllers
 
             return StatusCode(HttpStatusCode.NoContent);
         }
-
         [Route("{id}/remove-member/{username}")]
         public async Task<IHttpActionResult> PatchRemoveMember(Guid id, string username)
         {
@@ -218,7 +212,6 @@ namespace PlanTogetherDotNetAPI.Controllers
 
             return StatusCode(HttpStatusCode.NoContent);
         }
-
         private bool MissionExists(Guid id)
             => base.EntityExists(id);
     }

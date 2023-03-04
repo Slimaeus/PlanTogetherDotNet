@@ -20,14 +20,10 @@ namespace PlanTogetherDotNetAPI.Controllers
     public class ProjectsController : BaseApiController<Project, ProjectDTO>
     {
         public ProjectsController(DataContext context, IMapper mapper) : base(context, mapper) {}
-
-        // GET: api/Projects
         public IQueryable<ProjectDTO> GetProjects([FromUri(Name = "")] PaginationParams @params)
             => Get(
                 @params, p => p.Name.ToLower().Contains(@params.SearchTerm.ToLower()) || p.Title.Contains(@params.SearchTerm.ToLower())
             );
-
-        // GET: api/Projects/5
         [ResponseType(typeof(ProjectDTO))]
         public async Task<IHttpActionResult> GetProject(Guid id)
         {
@@ -43,8 +39,6 @@ namespace PlanTogetherDotNetAPI.Controllers
 
             return Ok(projectDTO);
         }
-
-        // PUT: api/Projects/5
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutProject(Guid id, EditProjectDTO input)
         {
@@ -82,8 +76,6 @@ namespace PlanTogetherDotNetAPI.Controllers
 
             return StatusCode(HttpStatusCode.NoContent);
         }
-
-        // POST: api/Projects
         [ResponseType(typeof(ProjectDTO))]
         public async Task<IHttpActionResult> PostProject(CreateProjectDTO input)
         {
@@ -128,8 +120,6 @@ namespace PlanTogetherDotNetAPI.Controllers
 
             return CreatedAtRoute("DefaultApi", new { id = project.Id }, Mapper.Map<ProjectDTO>(project));
         }
-
-        // DELETE: api/Projects/5
         [ResponseType(typeof(ProjectDTO))]
         public Task<IHttpActionResult> DeleteProject(Guid id)
             => base.Delete(id);
