@@ -16,9 +16,7 @@ namespace PlanTogetherDotNetAPI.Controllers
 {
     public class CommentsController : BaseApiController<Comment, CommentDTO>
     {
-        public CommentsController(DataContext context, IMapper mapper) : base(context, mapper)
-        {
-        }
+        public CommentsController(DataContext context, IMapper mapper) : base(context, mapper) {}
 
         // GET: api/Comments
         public IQueryable<CommentDTO> GetProjects([FromUri(Name = "")] PaginationParams @params)

@@ -16,9 +16,7 @@ namespace PlanTogetherDotNetAPI.Controllers
 {
     public class GroupsController : BaseApiController<Group, GroupDTO>
     {
-        public GroupsController(DataContext context, IMapper mapper) : base(context, mapper)
-        {
-        }
+        public GroupsController(DataContext context, IMapper mapper) : base(context, mapper) {}
         // GET: api/Groups
         public IQueryable<GroupDTO> GetProjects([FromUri(Name = "")] PaginationParams @params)
             => Get(

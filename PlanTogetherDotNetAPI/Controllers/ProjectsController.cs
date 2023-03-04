@@ -9,7 +9,6 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using PlanTogetherDotNetAPI.Data;
 using PlanTogetherDotNetAPI.DTOs.Common;
 using PlanTogetherDotNetAPI.DTOs.Project;
@@ -20,9 +19,7 @@ namespace PlanTogetherDotNetAPI.Controllers
     [RoutePrefix("api/Projects")]
     public class ProjectsController : BaseApiController<Project, ProjectDTO>
     {
-        public ProjectsController(DataContext context, IMapper mapper) : base(context, mapper)
-        {
-        }
+        public ProjectsController(DataContext context, IMapper mapper) : base(context, mapper) {}
 
         // GET: api/Projects
         public IQueryable<ProjectDTO> GetProjects([FromUri(Name = "")] PaginationParams @params)
