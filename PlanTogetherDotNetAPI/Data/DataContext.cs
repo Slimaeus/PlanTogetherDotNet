@@ -7,7 +7,7 @@ namespace PlanTogetherDotNetAPI.Data
 {
     public class DataContext : IdentityDbContext<AppUser>
     {
-        public DataContext() : base(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString)
+        public DataContext() : base("DefaultConnection")
         {
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<DataContext, DataInitializer>());
             //Database.SetInitializer(new DropCreateDatabaseAlways<DataContext>());
