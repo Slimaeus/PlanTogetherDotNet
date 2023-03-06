@@ -6,7 +6,6 @@ using System.Data.Entity.Migrations;
 using System.Linq;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using System.Diagnostics;
 
 namespace PlanTogetherDotNetAPI.Data
 {
@@ -59,78 +58,106 @@ namespace PlanTogetherDotNetAPI.Data
                 userManager.Create(user, "P@ssw0rd");
             }
 
+            if (context.Groups.Any()) return;
+            var groups = new List<Group>
+            {
+                new Group
+                {
+                    Name = "semibox",
+                    Title = "Semibox",
+                    Description = "Half of a box",
+                    Owner = users[1],
+                    //Projects = new List<Project>
+                    //{
+                    //    projects[1],
+                    //    projects[2]
+                    //}
+                },
+                new Group
+                {
+                    Name = "owlvernyte",
+                    Title = "Owlvernyte",
+                    Description = "Overnight owl",
+                    Owner = users[0],
+                    //Projects = new List<Project>
+                    //{
+                    //    projects[0]
+                    //}
+                }
+            };
+
+            context.Groups.AddRange(groups);
+
             if (context.Projects.Any()) return;
 
             var projects = new List<Project>
+            {
+                new Project
+                {
+                    Name = "caro-online",
+                    Title = "Caro Online",
+                    Description = "Caro game",
+                    ProjectUsers = new List<ProjectUser>
+                    {
+                        new ProjectUser
                         {
-                            new Project
-                            {
-                                Name = "caro-online",
-                                Title = "Caro Online",
-                                Description = "Caro game",
-                                //Members = new List<ProjectUser>
-                                //{
-                                //    new ProjectUser
-                                //    {
-                                //        User = users[0]
-                                //    }
-                                //},
-                                //Missions = new List<Mission>
-                                //{
-                                //    missions[2]
-                                //},
-                                //Processes = new List<Process>
-                                //{
-                                //    processes[0]
-                                //}
-                            },
-                            new Project
-                            {
-                                Name = "plan-together",
-                                Title = "Plan together",
-                                Description = "Mission management platform",
-                                //Members = new List<ProjectUser>
-                                //{
-                                //    new ProjectUser
-                                //    {
-                                //        User = users[0]
-                                //    },
-                                //    new ProjectUser
-                                //    {
-                                //        User = users[1]
-                                //    }
-                                //},
-                                //Missions = new List<Mission>
-                                //{
-                                //    missions[1],
-                                //    missions[3]
-                                //},
-                                //Processes = new List<Process>
-                                //{
-                                //    processes[1]
-                                //}
-                            },
-                            new Project
-                            {
-                                Name = "plan-alone",
-                                Title = "Plan alone",
-                                Description = "Mission management platform",
-                                //Members = new List<ProjectUser>
-                                //{
-                                //    new ProjectUser
-                                //    {
-                                //        User = users[1]
-                                //    }
-                                //},
-                                //Missions = new List<Mission>
-                                //{
-                                //    missions[0]
-                                //}
-                            }
-                        };
+                            User = users[0]
+                        }
+                    },
+                    Group = groups[1]
+                    //Processes = new List<Process>
+                    //{
+                    //    processes[0]
+                    //}
+                },
+                new Project
+                {
+                    Name = "plan-together",
+                    Title = "Plan together",
+                    Description = "Mission management platform",
+                    ProjectUsers = new List<ProjectUser>
+                    {
+                        new ProjectUser
+                        {
+                            User = users[0]
+                        },
+                        new ProjectUser
+                        {
+                            User = users[1]
+                        }
+                    },
+                    Group = groups[0]
+                    //Missions = new List<Mission>
+                    //{
+                    //    missions[1],
+                    //    missions[3]
+                    //},
+                    //Processes = new List<Process>
+                    //{
+                    //    processes[1]
+                    //}
+                },
+                new Project
+                {
+                    Name = "plan-alone",
+                    Title = "Plan alone",
+                    Description = "Mission management platform",
+                    ProjectUsers = new List<ProjectUser>
+                    {
+                        new ProjectUser
+                        {
+                            User = users[1]
+                        }
+                    },
+                    Group = groups[0]
+                    //Missions = new List<Mission>
+                    //{
+                    //    missions[0]
+                    //}
+                }
+            };
 
             context.Projects.AddRange(projects);
-
 
             if (context.Missions.Any()) return;
 
@@ -219,6 +246,30 @@ namespace PlanTogetherDotNetAPI.Data
             };
 
             context.Missions.AddRange(missions);
+
+            var comments = new List<Comment>
+            {
+                new Comment
+                {
+                    Content = "What a mission!",
+                    Mission = missions[1],
+                    Owner = users[0]
+                },
+                new Comment
+                {
+                    Content = "O_o",
+                    Mission = missions[1],
+                    Owner = users[1]
+                },
+                new Comment
+                {
+                    Content = "Nice!",
+                    Mission = missions[0],
+                    Owner = users[1]
+                }
+            };
+
+            context.Comments.AddRange(comments);
 
             context.SaveChanges();
 
