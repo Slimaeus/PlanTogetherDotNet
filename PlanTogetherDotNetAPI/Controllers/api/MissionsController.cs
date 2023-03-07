@@ -1,23 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
-using System.Web.ModelBinding;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using PlanTogetherDotNetAPI.Data;
 using PlanTogetherDotNetAPI.DTOs;
+using PlanTogetherDotNetAPI.DTOs.Comments;
 using PlanTogetherDotNetAPI.DTOs.Common;
-using PlanTogetherDotNetAPI.DTOs.Missions;
 using PlanTogetherDotNetAPI.Extensions;
 using PlanTogetherDotNetAPI.Models;
 
@@ -118,6 +114,35 @@ namespace PlanTogetherDotNetAPI.Controllers
         [ResponseType(typeof(MissionDTO))]
         public Task<IHttpActionResult> DeleteMission(Guid id)
             => base.Delete(id);
+        [ResponseType(typeof(CommentDTO))]
+        [Route("{id}/comments")]
+        public async Task<IQueryable<CommentDTO>> GetComments(Guid id, [FromUri(Name = "")] PaginationParams @params)
+        {
+            if (@params.PageSize <= 0)
+                return Context.Comments.Include(c => c.Mission).Where(c => c.Mission.Id == id).ProjectTo<CommentDTO>(Mapper.ConfigurationProvider).AsQueryable();
+
+            var mission = await Context.Missions
+                .AsNoTracking()
+                .Include(m => m.Comments)
+                .Include(m => m.Comments.Select(c => c.Owner))
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            var query = mission.Comments.AsQueryable();
+
+            if (!string.IsNullOrEmpty(@params.SearchTerm))
+            {
+                query = query
+                    .Where(p => p.Content.ToLower().Contains(@params.SearchTerm.ToLower()));
+            }
+
+            var count = query.Count();
+
+            query = query.Paginate(@params.PageNumber, @params.PageSize);
+
+            HttpContext.Current.Response.AddPaginationHeader(new PaginationHeader(@params.PageNumber, @params.PageSize, count));
+            return query
+                .ProjectTo<CommentDTO>(Mapper.ConfigurationProvider);
+        }
         [Route("{id}/add-member/{username}")]
         public async Task<IHttpActionResult> PatchAddMember(Guid id, string username)
         {

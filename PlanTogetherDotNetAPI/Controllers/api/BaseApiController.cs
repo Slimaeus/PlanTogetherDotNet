@@ -26,9 +26,6 @@ namespace PlanTogetherDotNetAPI.Controllers
         protected IMapper Mapper { get; }
         protected virtual IQueryable<TDTO> Get(PaginationParams @params, Expression<Func<TEntity, bool>> predicate)
         {
-            if (@params.PageSize <= 0)
-                return Context.Set<TEntity>().AsNoTracking().ProjectTo<TDTO>(Mapper.ConfigurationProvider);
-
             var query = Context.Set<TEntity>()
                 .AsNoTracking().AsQueryable();
 
