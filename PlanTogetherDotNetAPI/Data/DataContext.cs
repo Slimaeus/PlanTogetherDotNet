@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNet.Identity.EntityFramework;
 using PlanTogetherDotNetAPI.Models;
-using System.Configuration;
 using System.Data.Entity;
 
 namespace PlanTogetherDotNetAPI.Data
@@ -10,7 +9,6 @@ namespace PlanTogetherDotNetAPI.Data
         public DataContext() : base("DefaultConnection")
         {
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<DataContext, DataInitializer>());
-            //Database.SetInitializer(new DropCreateDatabaseAlways<DataContext>());
             Configuration.ProxyCreationEnabled = false;
             Configuration.LazyLoadingEnabled = false;
             Configuration.AutoDetectChangesEnabled = true;
@@ -33,7 +31,6 @@ namespace PlanTogetherDotNetAPI.Data
 
             modelBuilder.Entity<ProjectUser>()
                 .HasKey(mu => new { mu.UserId, mu.ProjectId });
-
         }
     }
 }
