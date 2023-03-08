@@ -22,18 +22,8 @@ namespace PlanTogetherDotNetAPI.Controllers.api
                 @params, p => p.Description.ToLower().Contains(@params.Query.ToLower())
             );
         [ResponseType(typeof(ProcessDTO))]
-        public async Task<IHttpActionResult> GetProcess(Guid id)
-        {
-            Process process = await Context.Processes
-                .AsNoTracking()
-                .SingleOrDefaultAsync(c => c.Id == id);
-            if (process == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(Mapper.Map<ProcessDTO>(process));
-        }
+        public Task<IHttpActionResult> GetProcess(Guid id)
+            => Get(id);
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutProcess(Guid id, EditProcessDTO input)
         {
@@ -106,8 +96,8 @@ namespace PlanTogetherDotNetAPI.Controllers.api
         }
         [ResponseType(typeof(ProcessDTO))]
         public Task<IHttpActionResult> DeleteProcess(Guid id)
-            => base.Delete(id);
+            => Delete(id);
         private bool ProcessExists(Guid id)
-            => base.EntityExists(id);
+            => EntityExists(id);
     }
 }

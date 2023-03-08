@@ -30,19 +30,9 @@ namespace PlanTogetherDotNetAPI.Controllers
             );
         [ResponseType(typeof(ProjectDTO))]
         [Route("{id:guid}")]
-        public async Task<IHttpActionResult> GetProject(Guid id)
-        {
-            Project project = await Context.Projects
-                .AsNoTracking()
-                .SingleOrDefaultAsync(p => p.Id == id);
-            ProjectDTO projectDTO = Mapper.Map<ProjectDTO>(project);
-            if (project == null)
-            {
-                return NotFound();
-            }
+        public Task<IHttpActionResult> GetProject(Guid id)
+            => Get(id);
 
-            return Ok(projectDTO);
-        }
         [ResponseType(typeof(ProjectDTO))]
         [Route("{name}")]
         public async Task<IHttpActionResult> GetProject(string name)
@@ -138,7 +128,7 @@ namespace PlanTogetherDotNetAPI.Controllers
         }
         [ResponseType(typeof(ProjectDTO))]
         public Task<IHttpActionResult> DeleteProject(Guid id)
-            => base.Delete(id);
+            => Delete(id);
         [ResponseType(typeof(MemberDTO))]
         [Route("{name}/members")]
         public IQueryable<MemberDTO> GetMembers(string name, [FromUri(Name = "")] PaginationParams @params)
@@ -289,6 +279,6 @@ namespace PlanTogetherDotNetAPI.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
         private bool ProjectExists(Guid id)
-            => base.EntityExists(id);
+            => EntityExists(id);
     }
 }

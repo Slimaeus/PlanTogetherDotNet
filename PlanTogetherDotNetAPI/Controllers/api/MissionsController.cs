@@ -24,25 +24,10 @@ namespace PlanTogetherDotNetAPI.Controllers
     {
         public MissionsController(DataContext context, IMapper mapper) : base(context, mapper) {}
         public IQueryable<MissionDTO> GetMissions([FromUri(Name = "")] PaginationParams @params)
-            => base.Get(@params, m => m.Title.ToLower().Contains(@params.Query.ToLower()) || m.Description.Contains(@params.Query.ToLower()));
+            => Get(@params, m => m.Title.ToLower().Contains(@params.Query.ToLower()) || m.Description.Contains(@params.Query.ToLower()));
         [ResponseType(typeof(MissionDTO))]
-        public async Task<IHttpActionResult> GetMission(Guid id)
-        {
-            Mission mission = await Context.Missions
-                .AsNoTracking()
-                .Include(m => m.Comments)
-                .Include(m => m.Comments.Select(c => c.Owner))
-                .Include(m => m.MissionUsers)
-                .Include(m => m.MissionUsers.Select(mu => mu.User))
-                .SingleOrDefaultAsync(m => m.Id == id);
-            MissionDTO missionDTO = Mapper.Map<MissionDTO>(mission);
-            if (mission == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(missionDTO);
-        }
+        public Task<IHttpActionResult> GetMission(Guid id)
+            => Get(id);
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutMission(Guid id, EditMissionDTO input)
         {
@@ -112,15 +97,15 @@ namespace PlanTogetherDotNetAPI.Controllers
         }
         [ResponseType(typeof(MissionDTO))]
         public Task<IHttpActionResult> DeleteMission(Guid id)
-            => base.Delete(id);
+            => Delete(id);
         [ResponseType(typeof(MemberDTO))]
         [Route("{id}/members")]
         public IQueryable<MemberDTO> GetMembers(Guid id, [FromUri(Name = "")] PaginationParams @params)
         {
             var query = Context.MissionUsers
                 .AsNoTracking()
-                .Where(pu => pu.MissionId == id)
-                .Select(pu => pu.User);
+                .Where(mu => mu.MissionId == id)
+                .Select(mu => mu.User);
 
             if (!string.IsNullOrEmpty(@params.Query))
                 query = query.Where(u => u.UserName.ToLower().Contains(@params.Query) || u.Email.ToLower().Contains(@params.Query));
@@ -249,6 +234,6 @@ namespace PlanTogetherDotNetAPI.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
         private bool MissionExists(Guid id)
-            => base.EntityExists(id);
+            => EntityExists(id);
     }
 }

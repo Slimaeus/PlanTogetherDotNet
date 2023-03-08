@@ -10,7 +10,6 @@ using System.Web.Http.Description;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using PlanTogetherDotNetAPI.Data;
-using PlanTogetherDotNetAPI.DTOs;
 using PlanTogetherDotNetAPI.DTOs.Common;
 using PlanTogetherDotNetAPI.DTOs.Group;
 using PlanTogetherDotNetAPI.DTOs.Project;
@@ -28,20 +27,9 @@ namespace PlanTogetherDotNetAPI.Controllers
                 @params, p => p.Name.ToLower().Contains(@params.Query.ToLower()) || p.Title.Contains(@params.Query.ToLower())
             );
         [ResponseType(typeof(GroupDTO))]
-        public async Task<IHttpActionResult> GetGroup(Guid id)
-        {
-            Group group = await Context.Groups
-                .AsNoTracking()
-                .Include(g => g.Projects)
-                .Include(g => g.Owner)
-                .SingleOrDefaultAsync(g => g.Id == id);
-            if (group == null)
-            {
-                return NotFound();
-            }
+        public Task<IHttpActionResult> GetGroup(Guid id)
+            => Get(id);
 
-            return Ok(Mapper.Map<GroupDTO>(group));
-        }
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutGroup(Guid id, EditGroupDTO input)
         {
@@ -128,7 +116,7 @@ namespace PlanTogetherDotNetAPI.Controllers
         }
         [ResponseType(typeof(GroupDTO))]
         public Task<IHttpActionResult> DeleteGroup(Guid id)
-            => base.Delete(id);
+            => Delete(id);
         [ResponseType(typeof(ProjectDTO))]
         [Route("{name}/projects")]
         public IQueryable<ProjectDTO> GetProjects(string name, [FromUri(Name = "")] PaginationParams @params)
@@ -150,6 +138,6 @@ namespace PlanTogetherDotNetAPI.Controllers
                 .ProjectTo<ProjectDTO>(Mapper.ConfigurationProvider);
         }
         private bool GroupExists(Guid id)
-            => base.EntityExists(id);
+            => EntityExists(id);
     }
 }

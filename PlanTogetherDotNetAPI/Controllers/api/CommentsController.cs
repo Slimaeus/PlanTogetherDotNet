@@ -22,19 +22,8 @@ namespace PlanTogetherDotNetAPI.Controllers
                 @params, p => p.Content.ToLower().Contains(@params.Query.ToLower())
             );
         [ResponseType(typeof(CommentDTO))]
-        public async Task<IHttpActionResult> GetComment(Guid id)
-        {
-            Comment comment = await Context.Comments
-                .AsNoTracking()
-                .Include(c => c.Owner)
-                .SingleOrDefaultAsync(c => c.Id == id);
-            if (comment == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(Mapper.Map<CommentDTO>(comment));
-        }
+        public Task<IHttpActionResult> GetComment(Guid id)
+            => Get(id);
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutComment(Guid id, EditCommentDTO input)
         {
@@ -114,8 +103,8 @@ namespace PlanTogetherDotNetAPI.Controllers
         }
         [ResponseType(typeof(CommentDTO))]
         public Task<IHttpActionResult> DeleteComment(Guid id)
-            => base.Delete(id);
+            => Delete(id);
         private bool CommentExists(Guid id)
-            => base.EntityExists(id);
+            => EntityExists(id);
     }
 }

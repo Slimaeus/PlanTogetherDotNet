@@ -10,12 +10,14 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Linq.Expressions;
+using PlanTogetherDotNetAPI.DTOs.Group;
+using System.Data.Entity;
 
 namespace PlanTogetherDotNetAPI.Controllers
 {
     public abstract class BaseApiController<TEntity, TDTO> : ApiController
         where TEntity : Entity
-        where TDTO : class
+        where TDTO : EntityDTO
     {
         public BaseApiController(DataContext context, IMapper mapper)
         {
@@ -24,7 +26,7 @@ namespace PlanTogetherDotNetAPI.Controllers
         }
         protected DataContext Context { get; }
         protected IMapper Mapper { get; }
-        protected virtual IQueryable<TDTO> Get(PaginationParams @params, Expression<Func<TEntity, bool>> predicate)
+        protected IQueryable<TDTO> Get(PaginationParams @params, Expression<Func<TEntity, bool>> predicate)
         {
             var query = Context.Set<TEntity>()
                 .AsNoTracking().AsQueryable();
@@ -43,7 +45,20 @@ namespace PlanTogetherDotNetAPI.Controllers
             return query
                 .ProjectTo<TDTO>(Mapper.ConfigurationProvider);
         }
-        public async Task<IHttpActionResult> Delete(Guid id)
+        protected async Task<IHttpActionResult> Get(Guid id)
+        {
+            TDTO entityDTO = await Context.Groups
+                .AsNoTracking()
+                .ProjectTo<TDTO>(Mapper.ConfigurationProvider)
+                .SingleOrDefaultAsync(g => g.Id == id);
+            if (entityDTO == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(entityDTO);
+        }
+        protected async Task<IHttpActionResult> Delete(Guid id)
         {
             TEntity entity = await Context.Set<TEntity>().FindAsync(id);
             if (entity == null)
