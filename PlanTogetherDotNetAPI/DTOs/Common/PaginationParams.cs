@@ -5,9 +5,9 @@
         public string Query { set; get; }
         private const int _maxPageSize = 50;
         private const int _minPageSize = 1;
-        public int PageNumber { get; set; } = 1;
+        public int Index { get; set; } = 1;
         private int _pageSize = 10;
-        public int PageSize
+        public int Size
         {
             get => _pageSize;
             set

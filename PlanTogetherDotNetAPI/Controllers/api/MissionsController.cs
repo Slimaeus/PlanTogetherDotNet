@@ -34,7 +34,7 @@ namespace PlanTogetherDotNetAPI.Controllers
                 .Include(m => m.Comments.Select(c => c.Owner))
                 .Include(m => m.MissionUsers)
                 .Include(m => m.MissionUsers.Select(mu => mu.User))
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .SingleOrDefaultAsync(m => m.Id == id);
             MissionDTO missionDTO = Mapper.Map<MissionDTO>(mission);
             if (mission == null)
             {
@@ -85,7 +85,7 @@ namespace PlanTogetherDotNetAPI.Controllers
                 return BadRequest(ModelState);
             }
             var project = await Context.Projects
-                .FirstOrDefaultAsync(p => p.Name == input.ProjectName);
+                .SingleOrDefaultAsync(p => p.Name == input.ProjectName);
 
             if (project == null) return NotFound();
 
@@ -116,18 +116,12 @@ namespace PlanTogetherDotNetAPI.Controllers
             => base.Delete(id);
         [ResponseType(typeof(CommentDTO))]
         [Route("{id}/comments")]
-        public async Task<IQueryable<CommentDTO>> GetComments(Guid id, [FromUri(Name = "")] PaginationParams @params)
+        public IQueryable<CommentDTO> GetComments(Guid id, [FromUri(Name = "")] PaginationParams @params)
         {
-            if (@params.PageSize <= 0)
-                return Context.Comments.Include(c => c.Mission).Where(c => c.Mission.Id == id).ProjectTo<CommentDTO>(Mapper.ConfigurationProvider).AsQueryable();
-
-            var mission = await Context.Missions
+            var query = Context.Comments
                 .AsNoTracking()
-                .Include(m => m.Comments)
-                .Include(m => m.Comments.Select(c => c.Owner))
-                .FirstOrDefaultAsync(m => m.Id == id);
-
-            var query = mission.Comments.AsQueryable();
+                .Include(c => c.Mission)
+                .Where(c => c.Mission.Id == id);
 
             if (!string.IsNullOrEmpty(@params.Query))
             {
@@ -137,9 +131,9 @@ namespace PlanTogetherDotNetAPI.Controllers
 
             var count = query.Count();
 
-            query = query.Paginate(@params.PageNumber, @params.PageSize);
+            query = query.Paginate(@params.Index, @params.Size);
 
-            HttpContext.Current.Response.AddPaginationHeader(new PaginationHeader(@params.PageNumber, @params.PageSize, count));
+            HttpContext.Current.Response.AddPaginationHeader(new PaginationHeader(@params.Index, @params.Size, count));
             return query
                 .ProjectTo<CommentDTO>(Mapper.ConfigurationProvider);
         }
@@ -152,13 +146,13 @@ namespace PlanTogetherDotNetAPI.Controllers
             }
 
             var user = await Context.Users
-                .FirstOrDefaultAsync(u => u.UserName == username);
+                .SingleOrDefaultAsync(u => u.UserName == username);
 
             if (user == null) return NotFound();
 
             var mission = await Context.Missions
                 .Include(m => m.MissionUsers)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .SingleOrDefaultAsync(m => m.Id == id);
 
             if (mission == null) return NotFound();
 
@@ -199,13 +193,13 @@ namespace PlanTogetherDotNetAPI.Controllers
             }
 
             var user = await Context.Users
-                .FirstOrDefaultAsync(u => u.UserName == username);
+                .SingleOrDefaultAsync(u => u.UserName == username);
 
             if (user == null) return NotFound();
 
             var mission = await Context.Missions
                 .Include(m => m.MissionUsers)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .SingleOrDefaultAsync(m => m.Id == id);
 
             if (mission == null) return NotFound();
 

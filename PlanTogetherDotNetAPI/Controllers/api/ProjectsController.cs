@@ -30,7 +30,7 @@ namespace PlanTogetherDotNetAPI.Controllers
             Project project = await Context.Projects
                 .AsNoTracking()
                 .Include(p => p.Missions)
-                .FirstOrDefaultAsync(p => p.Id == id);
+                .SingleOrDefaultAsync(p => p.Id == id);
             ProjectDTO projectDTO = Mapper.Map<ProjectDTO>(project);
             if (project == null)
             {
@@ -94,7 +94,7 @@ namespace PlanTogetherDotNetAPI.Controllers
             }
 
             var group = await Context.Groups
-                .FirstOrDefaultAsync(g => g.Name == input.GroupName);
+                .SingleOrDefaultAsync(g => g.Name == input.GroupName);
 
             if (group == null) return NotFound();
 
@@ -133,13 +133,13 @@ namespace PlanTogetherDotNetAPI.Controllers
             }
 
             var user = await Context.Users
-                .FirstOrDefaultAsync(u => u.UserName == username);
+                .SingleOrDefaultAsync(u => u.UserName == username);
 
             if (user == null) return NotFound();
 
             var project = await Context.Projects
                 .Include(m => m.ProjectUsers)
-                .FirstOrDefaultAsync(m => m.Name == name);
+                .SingleOrDefaultAsync(m => m.Name == name);
 
             if (project == null) return NotFound();
 
@@ -180,13 +180,13 @@ namespace PlanTogetherDotNetAPI.Controllers
             }
 
             var user = await Context.Users
-                .FirstOrDefaultAsync(u => u.UserName == username);
+                .SingleOrDefaultAsync(u => u.UserName == username);
 
             if (user == null) return NotFound();
 
             var project = await Context.Projects
                 .Include(m => m.ProjectUsers)
-                .FirstOrDefaultAsync(m => m.Name == name);
+                .SingleOrDefaultAsync(m => m.Name == name);
 
             if (project == null) return NotFound();
 

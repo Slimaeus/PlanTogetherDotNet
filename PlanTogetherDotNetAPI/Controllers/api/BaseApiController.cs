@@ -37,9 +37,9 @@ namespace PlanTogetherDotNetAPI.Controllers
 
             var count = query.Count();
 
-            query = query.Paginate(@params.PageNumber, @params.PageSize);
+            query = query.Paginate(@params.Index, @params.Size);
 
-            HttpContext.Current.Response.AddPaginationHeader(new PaginationHeader(@params.PageNumber, @params.PageSize, count));
+            HttpContext.Current.Response.AddPaginationHeader(new PaginationHeader(@params.Index, @params.Size, count));
             return query
                 .ProjectTo<TDTO>(Mapper.ConfigurationProvider);
         }

@@ -28,7 +28,7 @@ namespace PlanTogetherDotNetAPI.Controllers
                 .AsNoTracking()
                 .Include(g => g.Projects)
                 .Include(g => g.Owner)
-                .FirstOrDefaultAsync(g => g.Id == id);
+                .SingleOrDefaultAsync(g => g.Id == id);
             if (group == null)
             {
                 return NotFound();
@@ -92,7 +92,7 @@ namespace PlanTogetherDotNetAPI.Controllers
             }
 
             var user = await Context.Users
-                .FirstOrDefaultAsync(u => u.UserName == input.UserName);
+                .SingleOrDefaultAsync(u => u.UserName == input.UserName);
 
             if (user == null) return NotFound();
 

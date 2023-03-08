@@ -27,7 +27,7 @@ namespace PlanTogetherDotNetAPI.Controllers
             Comment comment = await Context.Comments
                 .AsNoTracking()
                 .Include(c => c.Owner)
-                .FirstOrDefaultAsync(c => c.Id == id);
+                .SingleOrDefaultAsync(c => c.Id == id);
             if (comment == null)
             {
                 return NotFound();
