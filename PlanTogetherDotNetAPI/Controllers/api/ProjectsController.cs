@@ -9,9 +9,13 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using PlanTogetherDotNetAPI.Data;
+using PlanTogetherDotNetAPI.DTOs;
+using PlanTogetherDotNetAPI.DTOs.Comments;
 using PlanTogetherDotNetAPI.DTOs.Common;
 using PlanTogetherDotNetAPI.DTOs.Project;
+using PlanTogetherDotNetAPI.Extensions;
 using PlanTogetherDotNetAPI.Models;
 
 namespace PlanTogetherDotNetAPI.Controllers
@@ -123,7 +127,24 @@ namespace PlanTogetherDotNetAPI.Controllers
         [ResponseType(typeof(ProjectDTO))]
         public Task<IHttpActionResult> DeleteProject(Guid id)
             => base.Delete(id);
+        [ResponseType(typeof(MissionDTO))]
+        [Route("{id}/missions")]
+        public IQueryable<MissionDTO> GetMissions(Guid id, [FromUri(Name = "")] PaginationParams @params)
+        {
+            var query = Context.Missions
+                .AsNoTracking()
+                .Where(m => m.ProjectId == id);
 
+            if (!string.IsNullOrEmpty(@params.Query))
+                query = query.Where(m => m.Title.ToLower().Contains(@params.Query) || m.Description.ToLower().Contains(@params.Query));
+
+            var count = query.Count();
+
+            query = query.Paginate(@params.Index, @params.Size);
+            HttpContext.Current.Response.AddPaginationHeader(new PaginationHeader(@params.Index, @params.Size, count));
+            return query
+                .ProjectTo<MissionDTO>(Mapper.ConfigurationProvider);
+        }
         [Route("{name}/add-member/{username}")]
         public async Task<IHttpActionResult> PatchAddMember(string name, string username)
         {
