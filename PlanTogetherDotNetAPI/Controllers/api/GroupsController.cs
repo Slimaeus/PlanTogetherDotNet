@@ -19,6 +19,7 @@ using PlanTogetherDotNetAPI.Models;
 
 namespace PlanTogetherDotNetAPI.Controllers
 {
+    [RoutePrefix("api/Groups")]
     public class GroupsController : BaseApiController<Group, GroupDTO>
     {
         public GroupsController(DataContext context, IMapper mapper) : base(context, mapper) {}

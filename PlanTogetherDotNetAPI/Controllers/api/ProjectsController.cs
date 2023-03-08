@@ -12,7 +12,6 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using PlanTogetherDotNetAPI.Data;
 using PlanTogetherDotNetAPI.DTOs;
-using PlanTogetherDotNetAPI.DTOs.Comments;
 using PlanTogetherDotNetAPI.DTOs.Common;
 using PlanTogetherDotNetAPI.DTOs.Project;
 using PlanTogetherDotNetAPI.Extensions;
