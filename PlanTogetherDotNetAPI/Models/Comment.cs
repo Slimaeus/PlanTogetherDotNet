@@ -7,7 +7,7 @@ namespace PlanTogetherDotNetAPI.Models
         public string Content { get; set; }
         public DateTime PostDate { get; set; } = DateTime.UtcNow;
         public DateTime UpdateDate { get; set; } = DateTime.UtcNow;
-
+        public Guid MissionId { get; set; }
         public Mission Mission { get; set; }
 
         public AppUser Owner { get; set; }

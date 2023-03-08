@@ -302,6 +302,10 @@
     <Compile Include="Migrations\202303051010342_Init.Designer.cs">
       <DependentUpon>202303051010342_Init.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202303080539379_AddMissionIdToComment.cs" />
+    <Compile Include="Migrations\202303080539379_AddMissionIdToComment.designer.cs">
+      <DependentUpon>202303080539379_AddMissionIdToComment.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\Group.cs" />
     <Compile Include="Models\MissionUser.cs" />
@@ -404,6 +408,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202303051010342_Init.resx">
       <DependentUpon>202303051010342_Init.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202303080539379_AddMissionIdToComment.resx">
+      <DependentUpon>202303080539379_AddMissionIdToComment.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

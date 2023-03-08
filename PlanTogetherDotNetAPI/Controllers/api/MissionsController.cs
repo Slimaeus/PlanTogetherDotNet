@@ -119,7 +119,7 @@ namespace PlanTogetherDotNetAPI.Controllers
         {
             var query = Context.Comments
                 .AsNoTracking()
-                .Where(c => c.Mission.Id == id);
+                .Where(c => c.MissionId == id);
 
             if (!string.IsNullOrEmpty(@params.Query))
             {
