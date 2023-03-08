@@ -128,12 +128,12 @@ namespace PlanTogetherDotNetAPI.Controllers
         public Task<IHttpActionResult> DeleteProject(Guid id)
             => base.Delete(id);
         [ResponseType(typeof(MissionDTO))]
-        [Route("{id}/missions")]
-        public IQueryable<MissionDTO> GetMissions(Guid id, [FromUri(Name = "")] PaginationParams @params)
+        [Route("{name}/missions")]
+        public IQueryable<MissionDTO> GetMissions(string name, [FromUri(Name = "")] PaginationParams @params)
         {
             var query = Context.Missions
                 .AsNoTracking()
-                .Where(m => m.ProjectId == id);
+                .Where(m => m.Project.Name == name);
 
             if (!string.IsNullOrEmpty(@params.Query))
                 query = query.Where(m => m.Title.ToLower().Contains(@params.Query) || m.Description.ToLower().Contains(@params.Query));

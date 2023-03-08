@@ -4,12 +4,17 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using PlanTogetherDotNetAPI.Data;
+using PlanTogetherDotNetAPI.DTOs;
 using PlanTogetherDotNetAPI.DTOs.Common;
 using PlanTogetherDotNetAPI.DTOs.Group;
+using PlanTogetherDotNetAPI.DTOs.Project;
+using PlanTogetherDotNetAPI.Extensions;
 using PlanTogetherDotNetAPI.Models;
 
 namespace PlanTogetherDotNetAPI.Controllers
@@ -123,7 +128,26 @@ namespace PlanTogetherDotNetAPI.Controllers
         [ResponseType(typeof(GroupDTO))]
         public Task<IHttpActionResult> DeleteGroup(Guid id)
             => base.Delete(id);
+        [ResponseType(typeof(ProjectDTO))]
+        [Route("{name}/projects")]
+        public IQueryable<ProjectDTO> GetProjects(string name, [FromUri(Name = "")] PaginationParams @params)
+        {
+            var query = Context.Projects
+                .AsNoTracking()
+                .Where(g => g.Group.Name == name);
 
+            if (!string.IsNullOrEmpty(@params.Query))
+                query = query.Where(g => g.Title.ToLower().Contains(@params.Query)
+                || g.Description.ToLower().Contains(@params.Query)
+                || g.Name.ToLower().Contains(@params.Query));
+
+            var count = query.Count();
+
+            query = query.Paginate(@params.Index, @params.Size);
+            HttpContext.Current.Response.AddPaginationHeader(new PaginationHeader(@params.Index, @params.Size, count));
+            return query
+                .ProjectTo<ProjectDTO>(Mapper.ConfigurationProvider);
+        }
         private bool GroupExists(Guid id)
             => base.EntityExists(id);
     }
