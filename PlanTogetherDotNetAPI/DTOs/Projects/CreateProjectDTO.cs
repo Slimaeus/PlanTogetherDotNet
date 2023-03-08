@@ -5,7 +5,7 @@ namespace PlanTogetherDotNetAPI.DTOs.Project
     public class CreateProjectDTO
     {
         [Required]
-        [RegularExpression("^[a-z-]+$")]
+        [RegularExpression("^[a-z0-9-]+$")]
         public string Name { get; set; }
         [Required]
         public string Title { get; set; }

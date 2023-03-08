@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace PlanTogetherDotNetAPI.DTOs.Group
 {
     public class CreateGroupDTO
     {
         [Required]
-        [RegularExpression("^[a-z-]+$")]
+        [RegularExpression("^[a-z0-9-]+$")]
         public string Name { get; set; }
 
         [Required]

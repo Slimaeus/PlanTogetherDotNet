@@ -4,6 +4,7 @@ using PlanTogetherDotNetAPI.DTOs.Account;
 using PlanTogetherDotNetAPI.DTOs.Comments;
 using PlanTogetherDotNetAPI.DTOs.Common;
 using PlanTogetherDotNetAPI.DTOs.Group;
+using PlanTogetherDotNetAPI.DTOs.Processes;
 using PlanTogetherDotNetAPI.DTOs.Project;
 using PlanTogetherDotNetAPI.Models;
 using System;
@@ -61,6 +62,18 @@ namespace PlanTogetherDotNetAPI.Profiles
             CreateMap<CreateCommentDTO, Comment>();
 
             CreateMap<EditCommentDTO, Comment>()
+                .ForAllMembers(options =>
+                {
+                    options.Condition((src, des, srcValue, desValue) => srcValue != null);
+                });
+            #endregion
+
+            #region Process
+            CreateMap<Process, ProcessDTO>();
+
+            CreateMap<CreateProcessDTO, Process>();
+
+            CreateMap<EditProcessDTO, Process>()
                 .ForAllMembers(options =>
                 {
                     options.Condition((src, des, srcValue, desValue) => srcValue != null);

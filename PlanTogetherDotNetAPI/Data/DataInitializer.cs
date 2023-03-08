@@ -67,11 +67,6 @@ namespace PlanTogetherDotNetAPI.Data
                     Title = "Semibox",
                     Description = "Half of a box",
                     Owner = users[1],
-                    //Projects = new List<Project>
-                    //{
-                    //    projects[1],
-                    //    projects[2]
-                    //}
                 },
                 new Group
                 {
@@ -79,10 +74,6 @@ namespace PlanTogetherDotNetAPI.Data
                     Title = "Owlvernyte",
                     Description = "Overnight owl",
                     Owner = users[0],
-                    //Projects = new List<Project>
-                    //{
-                    //    projects[0]
-                    //}
                 }
             };
 
@@ -105,10 +96,6 @@ namespace PlanTogetherDotNetAPI.Data
                         }
                     },
                     Group = groups[1]
-                    //Processes = new List<Process>
-                    //{
-                    //    processes[0]
-                    //}
                 },
                 new Project
                 {
@@ -127,15 +114,6 @@ namespace PlanTogetherDotNetAPI.Data
                         }
                     },
                     Group = groups[0]
-                    //Missions = new List<Mission>
-                    //{
-                    //    missions[1],
-                    //    missions[3]
-                    //},
-                    //Processes = new List<Process>
-                    //{
-                    //    processes[1]
-                    //}
                 },
                 new Project
                 {
@@ -150,14 +128,32 @@ namespace PlanTogetherDotNetAPI.Data
                         }
                     },
                     Group = groups[0]
-                    //Missions = new List<Mission>
-                    //{
-                    //    missions[0]
-                    //}
                 }
             };
 
             context.Projects.AddRange(projects);
+
+            if (context.Processes.Any()) return;
+
+            var processes = new List<Process>
+            {
+                new Process
+                {
+                    Title = "First Process",
+                    Description = "Just a process",
+                    IsDone = false,
+                    Project = projects[0]
+                },
+                new Process
+                {
+                    Title = "Second Process",
+                    Description = "Another process",
+                    IsDone = true,
+                    Project = projects[1]
+                }
+            };
+
+            context.Processes.AddRange(processes);
 
             if (context.Missions.Any()) return;
 

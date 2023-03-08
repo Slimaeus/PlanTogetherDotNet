@@ -265,6 +265,7 @@
     <Compile Include="Controllers\api\BaseApiController.cs" />
     <Compile Include="Controllers\api\CommentsController.cs" />
     <Compile Include="Controllers\api\GroupsController.cs" />
+    <Compile Include="Controllers\api\ProcessesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\api\MissionsController.cs" />
     <Compile Include="Controllers\api\ProjectsController.cs" />
@@ -287,6 +288,9 @@
     <Compile Include="DTOs\Account\LoginDTO.cs" />
     <Compile Include="DTOs\Missions\MissionDTO.cs" />
     <Compile Include="DTOs\Account\RegisterDTO.cs" />
+    <Compile Include="DTOs\Processes\CreateProcessDTO.cs" />
+    <Compile Include="DTOs\Processes\EditProcessDTO.cs" />
+    <Compile Include="DTOs\Processes\ProcessDTO.cs" />
     <Compile Include="DTOs\Projects\AddMissionDTO.cs" />
     <Compile Include="DTOs\Projects\CreateProjectDTO.cs" />
     <Compile Include="DTOs\Projects\EditProjectDTO.cs" />
@@ -305,6 +309,10 @@
     <Compile Include="Migrations\202303080539379_AddMissionIdToComment.cs" />
     <Compile Include="Migrations\202303080539379_AddMissionIdToComment.designer.cs">
       <DependentUpon>202303080539379_AddMissionIdToComment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202303080619285_AddProcessTable.cs" />
+    <Compile Include="Migrations\202303080619285_AddProcessTable.designer.cs">
+      <DependentUpon>202303080619285_AddProcessTable.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\Group.cs" />
@@ -411,6 +419,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202303080539379_AddMissionIdToComment.resx">
       <DependentUpon>202303080539379_AddMissionIdToComment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202303080619285_AddProcessTable.resx">
+      <DependentUpon>202303080619285_AddProcessTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

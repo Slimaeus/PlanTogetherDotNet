@@ -14,7 +14,7 @@ namespace PlanTogetherDotNetAPI.Models
 
         public Group Group { get; set; }
         public ICollection<ProjectUser> ProjectUsers { get; set; } = new HashSet<ProjectUser>();
-
+        public ICollection<Process> Processes { get; set; } = new HashSet<Process>();
         public ICollection<Mission> Missions { get; set; } = new HashSet<Mission>();
     }
 }

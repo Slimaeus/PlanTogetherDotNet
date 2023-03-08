@@ -49,7 +49,6 @@ namespace PlanTogetherDotNetAPI.Controllers
             }
             var comment = await Context.Comments.FindAsync(id);
             Mapper.Map(input, comment);
-            Context.Entry(comment).State = EntityState.Modified;
 
             try
             {

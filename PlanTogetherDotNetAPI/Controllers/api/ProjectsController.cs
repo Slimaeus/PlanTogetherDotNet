@@ -13,6 +13,7 @@ using AutoMapper.QueryableExtensions;
 using PlanTogetherDotNetAPI.Data;
 using PlanTogetherDotNetAPI.DTOs;
 using PlanTogetherDotNetAPI.DTOs.Common;
+using PlanTogetherDotNetAPI.DTOs.Processes;
 using PlanTogetherDotNetAPI.DTOs.Project;
 using PlanTogetherDotNetAPI.Extensions;
 using PlanTogetherDotNetAPI.Models;
@@ -28,12 +29,27 @@ namespace PlanTogetherDotNetAPI.Controllers
                 @params, p => p.Name.ToLower().Contains(@params.Query.ToLower()) || p.Title.Contains(@params.Query.ToLower())
             );
         [ResponseType(typeof(ProjectDTO))]
+        [Route("{id:guid}")]
         public async Task<IHttpActionResult> GetProject(Guid id)
         {
             Project project = await Context.Projects
                 .AsNoTracking()
-                .Include(p => p.Missions)
                 .SingleOrDefaultAsync(p => p.Id == id);
+            ProjectDTO projectDTO = Mapper.Map<ProjectDTO>(project);
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(projectDTO);
+        }
+        [ResponseType(typeof(ProjectDTO))]
+        [Route("{name}")]
+        public async Task<IHttpActionResult> GetProject(string name)
+        {
+            Project project = await Context.Projects
+                .AsNoTracking()
+                .SingleOrDefaultAsync(p => p.Name == name);
             ProjectDTO projectDTO = Mapper.Map<ProjectDTO>(project);
             if (project == null)
             {
@@ -140,6 +156,24 @@ namespace PlanTogetherDotNetAPI.Controllers
             HttpContext.Current.Response.AddPaginationHeader(new PaginationHeader(@params.Index, @params.Size, count));
             return query
                 .ProjectTo<MissionDTO>(Mapper.ConfigurationProvider);
+        }
+        [ResponseType(typeof(ProcessDTO))]
+        [Route("{name}/processes")]
+        public IQueryable<ProcessDTO> GetProcesss(string name, [FromUri(Name = "")] PaginationParams @params)
+        {
+            var query = Context.Processes
+                .AsNoTracking()
+                .Where(m => m.Project.Name == name);
+
+            if (!string.IsNullOrEmpty(@params.Query))
+                query = query.Where(m => m.Title.ToLower().Contains(@params.Query) || m.Description.ToLower().Contains(@params.Query));
+
+            var count = query.Count();
+
+            query = query.Paginate(@params.Index, @params.Size);
+            HttpContext.Current.Response.AddPaginationHeader(new PaginationHeader(@params.Index, @params.Size, count));
+            return query
+                .ProjectTo<ProcessDTO>(Mapper.ConfigurationProvider);
         }
         [Route("{name}/add-member/{username}")]
         public async Task<IHttpActionResult> PatchAddMember(string name, string username)

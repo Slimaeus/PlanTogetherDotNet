@@ -17,6 +17,7 @@ namespace PlanTogetherDotNetAPI.Data
 
         public DbSet<Mission> Missions { get; set; }
         public DbSet<Project> Projects { get; set; }
+        public DbSet<Process> Processes { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<MissionUser> MissionUsers { get; set; }
         public DbSet<ProjectUser> ProjectUsers { get; set; }
