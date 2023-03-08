@@ -113,6 +113,25 @@ namespace PlanTogetherDotNetAPI.Controllers
         [ResponseType(typeof(MissionDTO))]
         public Task<IHttpActionResult> DeleteMission(Guid id)
             => base.Delete(id);
+        [ResponseType(typeof(MemberDTO))]
+        [Route("{id}/members")]
+        public IQueryable<MemberDTO> GetMembers(Guid id, [FromUri(Name = "")] PaginationParams @params)
+        {
+            var query = Context.MissionUsers
+                .AsNoTracking()
+                .Where(pu => pu.MissionId == id)
+                .Select(pu => pu.User);
+
+            if (!string.IsNullOrEmpty(@params.Query))
+                query = query.Where(u => u.UserName.ToLower().Contains(@params.Query) || u.Email.ToLower().Contains(@params.Query));
+
+            var count = query.Count();
+
+            query = query.UserPaginate(@params.Index, @params.Size);
+            HttpContext.Current.Response.AddPaginationHeader(new PaginationHeader(@params.Index, @params.Size, count));
+            return query
+                .ProjectTo<MemberDTO>(Mapper.ConfigurationProvider);
+        }
         [ResponseType(typeof(CommentDTO))]
         [Route("{id}/comments")]
         public IQueryable<CommentDTO> GetComments(Guid id, [FromUri(Name = "")] PaginationParams @params)

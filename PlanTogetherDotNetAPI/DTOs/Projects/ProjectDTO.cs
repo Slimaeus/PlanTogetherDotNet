@@ -12,8 +12,5 @@ namespace PlanTogetherDotNetAPI.DTOs.Project
         public string Name { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-
-        [JsonProperty("Members")]
-        public ICollection<MemberDTO> ProjectUsers { get; set; } = new HashSet<MemberDTO>();
     }
 }

@@ -16,5 +16,16 @@ namespace PlanTogetherDotNetAPI.Extensions
                 .Skip(skipCount)
                 .Take(takeCount);
         }
+        public static IQueryable<T> UserPaginate<T>(this IQueryable<T> query, int pageNumber, int pageSize)
+            where T : AppUser
+        {
+            var skipCount = ((pageNumber > 1 ? pageNumber : 1) - 1) * pageSize;
+            var takeCount = pageSize;
+
+            return query
+                .OrderBy(m => m.DisplayName)
+                .Skip(skipCount)
+                .Take(takeCount);
+        }
     }
 }
