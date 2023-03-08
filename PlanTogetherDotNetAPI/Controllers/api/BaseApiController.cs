@@ -29,7 +29,7 @@ namespace PlanTogetherDotNetAPI.Controllers
             var query = Context.Set<TEntity>()
                 .AsNoTracking().AsQueryable();
 
-            if (!string.IsNullOrEmpty(@params.SearchTerm))
+            if (!string.IsNullOrEmpty(@params.Query))
             {
                 query = query
                     .Where(predicate);

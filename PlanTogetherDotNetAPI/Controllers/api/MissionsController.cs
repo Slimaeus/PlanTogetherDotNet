@@ -24,7 +24,7 @@ namespace PlanTogetherDotNetAPI.Controllers
     {
         public MissionsController(DataContext context, IMapper mapper) : base(context, mapper) {}
         public IQueryable<MissionDTO> GetMissions([FromUri(Name = "")] PaginationParams @params)
-            => base.Get(@params, m => m.Title.ToLower().Contains(@params.SearchTerm.ToLower()) || m.Description.Contains(@params.SearchTerm.ToLower()));
+            => base.Get(@params, m => m.Title.ToLower().Contains(@params.Query.ToLower()) || m.Description.Contains(@params.Query.ToLower()));
         [ResponseType(typeof(MissionDTO))]
         public async Task<IHttpActionResult> GetMission(Guid id)
         {
@@ -129,10 +129,10 @@ namespace PlanTogetherDotNetAPI.Controllers
 
             var query = mission.Comments.AsQueryable();
 
-            if (!string.IsNullOrEmpty(@params.SearchTerm))
+            if (!string.IsNullOrEmpty(@params.Query))
             {
                 query = query
-                    .Where(p => p.Content.ToLower().Contains(@params.SearchTerm.ToLower()));
+                    .Where(p => p.Content.ToLower().Contains(@params.Query.ToLower()));
             }
 
             var count = query.Count();

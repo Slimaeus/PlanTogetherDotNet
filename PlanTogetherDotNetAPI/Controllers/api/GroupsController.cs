@@ -19,7 +19,7 @@ namespace PlanTogetherDotNetAPI.Controllers
         public GroupsController(DataContext context, IMapper mapper) : base(context, mapper) {}
         public IQueryable<GroupDTO> GetProjects([FromUri(Name = "")] PaginationParams @params)
             => Get(
-                @params, p => p.Name.ToLower().Contains(@params.SearchTerm.ToLower()) || p.Title.Contains(@params.SearchTerm.ToLower())
+                @params, p => p.Name.ToLower().Contains(@params.Query.ToLower()) || p.Title.Contains(@params.Query.ToLower())
             );
         [ResponseType(typeof(GroupDTO))]
         public async Task<IHttpActionResult> GetGroup(Guid id)

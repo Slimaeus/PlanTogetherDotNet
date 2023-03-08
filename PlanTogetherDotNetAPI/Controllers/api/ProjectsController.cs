@@ -22,7 +22,7 @@ namespace PlanTogetherDotNetAPI.Controllers
         public ProjectsController(DataContext context, IMapper mapper) : base(context, mapper) {}
         public IQueryable<ProjectDTO> GetProjects([FromUri(Name = "")] PaginationParams @params)
             => Get(
-                @params, p => p.Name.ToLower().Contains(@params.SearchTerm.ToLower()) || p.Title.Contains(@params.SearchTerm.ToLower())
+                @params, p => p.Name.ToLower().Contains(@params.Query.ToLower()) || p.Title.Contains(@params.Query.ToLower())
             );
         [ResponseType(typeof(ProjectDTO))]
         public async Task<IHttpActionResult> GetProject(Guid id)

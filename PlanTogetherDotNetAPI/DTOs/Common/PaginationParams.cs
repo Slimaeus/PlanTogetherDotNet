@@ -2,7 +2,7 @@
 {
     public class PaginationParams
     {
-        public string SearchTerm { set; get; }
+        public string Query { set; get; }
         private const int _maxPageSize = 50;
         private const int _minPageSize = 1;
         public int PageNumber { get; set; } = 1;

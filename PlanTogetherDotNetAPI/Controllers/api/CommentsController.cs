@@ -19,7 +19,7 @@ namespace PlanTogetherDotNetAPI.Controllers
         public CommentsController(DataContext context, IMapper mapper) : base(context, mapper) {}
         public IQueryable<CommentDTO> GetProjects([FromUri(Name = "")] PaginationParams @params)
             => Get(
-                @params, p => p.Content.ToLower().Contains(@params.SearchTerm.ToLower())
+                @params, p => p.Content.ToLower().Contains(@params.Query.ToLower())
             );
         [ResponseType(typeof(CommentDTO))]
         public async Task<IHttpActionResult> GetComment(Guid id)
