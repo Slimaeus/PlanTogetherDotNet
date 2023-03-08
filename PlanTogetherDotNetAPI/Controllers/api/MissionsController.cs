@@ -57,7 +57,6 @@ namespace PlanTogetherDotNetAPI.Controllers
             }
             var mission = await Context.Missions.FindAsync(id);
             Mapper.Map(input, mission);
-            Context.Entry(mission).State = EntityState.Modified;
 
             try
             {

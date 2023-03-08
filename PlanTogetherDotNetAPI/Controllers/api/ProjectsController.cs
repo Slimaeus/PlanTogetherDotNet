@@ -50,16 +50,13 @@ namespace PlanTogetherDotNetAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var project = await Context.Projects.FindAsync(id);
-            Mapper.Map(input, project);
-            Context.Entry(project).State = EntityState.Modified;
-
-            if (id != project.Id)
+            if (id != input.Id)
             {
                 return BadRequest();
             }
 
-            Context.Entry(project).State = EntityState.Modified;
+            var project = await Context.Projects.FindAsync(id);
+            Mapper.Map(input, project);
 
             try
             {

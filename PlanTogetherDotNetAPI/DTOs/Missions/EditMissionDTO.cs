@@ -11,16 +11,14 @@ namespace PlanTogetherDotNetAPI.DTOs
     {
         [Required]
         public Guid Id { get; set; }
-        [Required]
         public string Title { get; set; }
-        [Required]
         public string Description { get; set; }
         [EnumDataType(typeof(MissionPriorities))]
         public MissionPriorities Priority { get; set; }
         [EnumDataType(typeof(MissionStates))]
         public MissionStates State { get; set; }
-        public DateTime StartDate { get; set; } = DateTime.UtcNow;
-        public DateTime EndDate { get; set; } = DateTime.UtcNow;
-        public DateTime CompletedDate { get; set; } = DateTime.UtcNow;
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public DateTime CompletedDate { get; set; }
     }
 }
