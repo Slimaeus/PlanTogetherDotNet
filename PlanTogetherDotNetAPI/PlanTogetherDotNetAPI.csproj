@@ -293,7 +293,6 @@
     <Compile Include="DTOs\Processes\CreateProcessDTO.cs" />
     <Compile Include="DTOs\Processes\EditProcessDTO.cs" />
     <Compile Include="DTOs\Processes\ProcessDTO.cs" />
-    <Compile Include="DTOs\Projects\AddMissionDTO.cs" />
     <Compile Include="DTOs\Projects\CreateProjectDTO.cs" />
     <Compile Include="DTOs\Projects\EditProjectDTO.cs" />
     <Compile Include="DTOs\Projects\ProjectDTO.cs" />
