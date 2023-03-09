@@ -19,7 +19,7 @@ using PlanTogetherDotNetAPI.Models;
 namespace PlanTogetherDotNetAPI.Controllers
 {
     [RoutePrefix("api/Groups")]
-    public class GroupsController : BaseApiController<Group, GroupDTO>
+    public class GroupsController : BaseApiController<Group, GroupDTO, EditGroupDTO>
     {
         public GroupsController(DataContext context, IMapper mapper) : base(context, mapper) {}
         public IQueryable<GroupDTO> GetProjects([FromUri(Name = "")] PaginationParams @params)
@@ -27,46 +27,27 @@ namespace PlanTogetherDotNetAPI.Controllers
                 @params, p => p.Name.ToLower().Contains(@params.Query.ToLower()) || p.Title.Contains(@params.Query.ToLower())
             );
         [ResponseType(typeof(GroupDTO))]
+        [Route("{id:guid}")]
         public Task<IHttpActionResult> GetGroup(Guid id)
             => Get(id);
-
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutGroup(Guid id, EditGroupDTO input)
+        [ResponseType(typeof(GroupDTO))]
+        [Route("{name}")]
+        public async Task<IHttpActionResult> GetGroup(string name)
         {
-            if (!ModelState.IsValid)
+            GroupDTO groupDTO = await Context.Groups
+                .AsNoTracking()
+                .ProjectTo<GroupDTO>(Mapper.ConfigurationProvider)
+                .SingleOrDefaultAsync(p => p.Name == name);
+            if (groupDTO == null)
             {
-                return BadRequest(ModelState);
+                return NotFound();
             }
-
-            if (id != input.Id)
-            {
-                return BadRequest();
-            }
-
-            var group = await Context.Groups.FindAsync(id);
-
-            Mapper.Map(input, group);
-
-            Context.Entry(group).State = EntityState.Modified;
-
-            try
-            {
-                await Context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!GroupExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return StatusCode(HttpStatusCode.NoContent);
+            return Ok(groupDTO);
         }
+        [ResponseType(typeof(void))]
+        [Route("{id:guid}")]
+        public Task<IHttpActionResult> PutGroup(Guid id, EditGroupDTO input)
+            => Put(id, input);
         [ResponseType(typeof(GroupDTO))]
         public async Task<IHttpActionResult> PostGroup(CreateGroupDTO input)
         {
@@ -111,7 +92,6 @@ namespace PlanTogetherDotNetAPI.Controllers
                     throw;
                 }
             }
-
             return CreatedAtRoute("DefaultApi", new { id = group.Id }, Mapper.Map<GroupDTO>(group));
         }
         [ResponseType(typeof(GroupDTO))]

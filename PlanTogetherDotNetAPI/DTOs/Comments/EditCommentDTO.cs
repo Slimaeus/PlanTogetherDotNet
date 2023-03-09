@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
+﻿using PlanTogetherDotNetAPI.DTOs.Common;
+using System;
 
 namespace PlanTogetherDotNetAPI.DTOs.Comments
 {
-    public class EditCommentDTO
+    public class EditCommentDTO : EditDTO
     {
-        [Required]
-        public Guid Id { get; set; }
         public string Content { get; set; }
         public DateTime UpdateDate { get; } = DateTime.UtcNow;
     }

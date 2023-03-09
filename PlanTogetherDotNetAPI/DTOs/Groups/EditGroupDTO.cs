@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using PlanTogetherDotNetAPI.DTOs.Common;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
 
 namespace PlanTogetherDotNetAPI.DTOs.Group
 {
-    public class EditGroupDTO
+    public class EditGroupDTO : EditDTO
     {
-        [Required]
-        public Guid Id { get; set; }
+        [RegularExpression("^[a-z0-9-]+$")]
         public string Name { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }

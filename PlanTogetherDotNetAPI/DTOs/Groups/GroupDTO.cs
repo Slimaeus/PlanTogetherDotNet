@@ -1,5 +1,4 @@
 ﻿using PlanTogetherDotNetAPI.DTOs.Common;
-using System;
 
 namespace PlanTogetherDotNetAPI.DTOs.Group
 {

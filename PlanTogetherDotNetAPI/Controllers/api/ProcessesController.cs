@@ -14,7 +14,7 @@ using System;
 
 namespace PlanTogetherDotNetAPI.Controllers.api
 {
-    public class ProcessesController : BaseApiController<Process, ProcessDTO>
+    public class ProcessesController : BaseApiController<Process, ProcessDTO, EditProcessDTO>
     {
         public ProcessesController(DataContext context, IMapper mapper) : base(context, mapper) {}
         public IQueryable<ProcessDTO> GetProjects([FromUri(Name = "")] PaginationParams @params)
@@ -25,38 +25,9 @@ namespace PlanTogetherDotNetAPI.Controllers.api
         public Task<IHttpActionResult> GetProcess(Guid id)
             => Get(id);
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutProcess(Guid id, EditProcessDTO input)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != input.Id)
-            {
-                return BadRequest();
-            }
-            var process = await Context.Processes.FindAsync(id);
-            Mapper.Map(input, process);
-
-            try
-            {
-                await Context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProcessExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return StatusCode(HttpStatusCode.NoContent);
-        }
+        [Route("{id:guid}")]
+        public Task<IHttpActionResult> PutProcess(Guid id, EditProcessDTO input)
+            => Put(id, input);
         [ResponseType(typeof(ProcessDTO))]
         public async Task<IHttpActionResult> PostProcess(CreateProcessDTO input)
         {

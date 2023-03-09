@@ -276,6 +276,7 @@
     <Compile Include="DTOs\Comments\CommentDTO.cs" />
     <Compile Include="DTOs\Comments\CreateCommentDTO.cs" />
     <Compile Include="DTOs\Comments\EditCommentDTO.cs" />
+    <Compile Include="DTOs\Common\EditDTO.cs" />
     <Compile Include="DTOs\Common\EntityDTO.cs" />
     <Compile Include="DTOs\Common\MemberDTO.cs" />
     <Compile Include="DTOs\Common\PaginationHeader.cs" />

@@ -17,8 +17,5 @@ namespace PlanTogetherDotNetAPI.DTOs
         public DateTime EndDate { get; set; } 
         public DateTime CompletedDate { get; set; } 
         public DateTime CreateDate { get; set; }
-        [JsonProperty("Members")]
-        public ICollection<MemberDTO> MissionUsers { get; set; } = new HashSet<MemberDTO>();
-        public ICollection<CommentDTO> Comments { get; set; } = new HashSet<CommentDTO>();
     }
 }

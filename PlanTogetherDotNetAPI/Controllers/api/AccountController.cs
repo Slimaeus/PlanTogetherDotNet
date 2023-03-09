@@ -13,30 +13,30 @@ namespace PlanTogetherDotNetAPI.Controllers
     [RoutePrefix("api/Account")]
     public class AccountController : ApiController
     {
-        private readonly UserManager<AppUser> userManager;
-        private readonly IMapper mapper;
-        private readonly TokenService tokenService;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly IMapper _mapper;
+        private readonly TokenService _tokenService;
 
         public AccountController(UserManager<AppUser> userManager, IMapper mapper, TokenService tokenService) 
         {
-            this.userManager = userManager;
-            this.mapper = mapper;
-            this.tokenService = tokenService;
+            _userManager = userManager;
+            _mapper = mapper;
+            _tokenService = tokenService;
         }
         [Authorize]
         public async Task<IHttpActionResult> GetCurrentUser()
         {
-            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
             if (user == null) return BadRequest();
-            var dto = mapper.Map<UserDTO>(user);
-            dto.Token = tokenService.CreateToken(user);
+            var dto = _mapper.Map<UserDTO>(user);
+            dto.Token = _tokenService.CreateToken(user);
             return Ok(dto);
         }
         [Authorize]
         [Route("user-count")]
         public async Task<IHttpActionResult> GetUserCountAsync()
         {
-            var count = await userManager.Users.CountAsync();
+            var count = await _userManager.Users.CountAsync();
             return Ok(count);
         }
         [Route("register")]
@@ -48,11 +48,11 @@ namespace PlanTogetherDotNetAPI.Controllers
                 Email = input.Email,
                 DisplayName = input.DisplayName
             };
-            var result = await userManager.CreateAsync(user,input.Password);
+            var result = await _userManager.CreateAsync(user,input.Password);
             if(result.Succeeded)
             {
-                var dto = mapper.Map<UserDTO>(user);
-                dto.Token = tokenService.CreateToken(user);
+                var dto = _mapper.Map<UserDTO>(user);
+                dto.Token = _tokenService.CreateToken(user);
                 return Ok(dto);
             }
             return BadRequest();
@@ -60,14 +60,14 @@ namespace PlanTogetherDotNetAPI.Controllers
         [Route("login")]
         public async Task<IHttpActionResult> PostLoginAsync(LoginDTO lg)
         {
-            var user = await userManager.FindByNameAsync(lg.UserName);
-            var result = await userManager.CheckPasswordAsync(user,lg.Password);
+            var user = await _userManager.FindByNameAsync(lg.UserName);
+            var result = await _userManager.CheckPasswordAsync(user,lg.Password);
             if(!result)
             {
                 return Unauthorized();
             }
-            var dto = mapper.Map<UserDTO>(user);
-            dto.Token = tokenService.CreateToken(user);
+            var dto = _mapper.Map<UserDTO>(user);
+            dto.Token = _tokenService.CreateToken(user);
             return Ok(dto);
         }
     }

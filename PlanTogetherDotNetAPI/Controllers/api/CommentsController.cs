@@ -2,7 +2,6 @@
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -14,10 +13,10 @@ using PlanTogetherDotNetAPI.Models;
 
 namespace PlanTogetherDotNetAPI.Controllers
 {
-    public class CommentsController : BaseApiController<Comment, CommentDTO>
+    public class CommentsController : BaseApiController<Comment, CommentDTO, EditCommentDTO>
     {
         public CommentsController(DataContext context, IMapper mapper) : base(context, mapper) {}
-        public IQueryable<CommentDTO> GetProjects([FromUri(Name = "")] PaginationParams @params)
+        public IQueryable<CommentDTO> GetComments([FromUri(Name = "")] PaginationParams @params)
             => Get(
                 @params, p => p.Content.ToLower().Contains(@params.Query.ToLower())
             );
@@ -25,38 +24,9 @@ namespace PlanTogetherDotNetAPI.Controllers
         public Task<IHttpActionResult> GetComment(Guid id)
             => Get(id);
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutComment(Guid id, EditCommentDTO input)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != input.Id)
-            {
-                return BadRequest();
-            }
-            var comment = await Context.Comments.FindAsync(id);
-            Mapper.Map(input, comment);
-
-            try
-            {
-                await Context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CommentExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return StatusCode(HttpStatusCode.NoContent);
-        }
+        [Route("{id:guid}")]
+        public Task<IHttpActionResult> PutComment(Guid id, EditCommentDTO input)
+            => Put(id, input);
         [ResponseType(typeof(CommentDTO))]
         public async Task<IHttpActionResult> PostComment(CreateCommentDTO input)
         {

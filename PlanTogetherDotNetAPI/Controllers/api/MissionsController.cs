@@ -20,7 +20,7 @@ using PlanTogetherDotNetAPI.Models;
 namespace PlanTogetherDotNetAPI.Controllers
 {
     [RoutePrefix("api/Missions")]
-    public class MissionsController : BaseApiController<Mission, MissionDTO>
+    public class MissionsController : BaseApiController<Mission, MissionDTO, EditMissionDTO>
     {
         public MissionsController(DataContext context, IMapper mapper) : base(context, mapper) {}
         public IQueryable<MissionDTO> GetMissions([FromUri(Name = "")] PaginationParams @params)
@@ -29,38 +29,9 @@ namespace PlanTogetherDotNetAPI.Controllers
         public Task<IHttpActionResult> GetMission(Guid id)
             => Get(id);
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutMission(Guid id, EditMissionDTO input)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != input.Id)
-            {
-                return BadRequest();
-            }
-            var mission = await Context.Missions.FindAsync(id);
-            Mapper.Map(input, mission);
-
-            try
-            {
-                await Context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MissionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return StatusCode(HttpStatusCode.NoContent);
-        }
+        [Route("{id:guid}")]
+        public Task<IHttpActionResult> PutMission(Guid id, EditMissionDTO input)
+            => Put(id, input);
         [ResponseType(typeof(MissionDTO))]
         public async Task<IHttpActionResult> PostMission(CreateMissionDTO input)
         {

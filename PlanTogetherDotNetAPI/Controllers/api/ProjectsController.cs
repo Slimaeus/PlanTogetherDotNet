@@ -21,7 +21,7 @@ using PlanTogetherDotNetAPI.Models;
 namespace PlanTogetherDotNetAPI.Controllers
 {
     [RoutePrefix("api/Projects")]
-    public class ProjectsController : BaseApiController<Project, ProjectDTO>
+    public class ProjectsController : BaseApiController<Project, ProjectDTO, EditProjectDTO>
     {
         public ProjectsController(DataContext context, IMapper mapper) : base(context, mapper) {}
         public IQueryable<ProjectDTO> GetProjects([FromUri(Name = "")] PaginationParams @params)
@@ -32,16 +32,15 @@ namespace PlanTogetherDotNetAPI.Controllers
         [Route("{id:guid}")]
         public Task<IHttpActionResult> GetProject(Guid id)
             => Get(id);
-
         [ResponseType(typeof(ProjectDTO))]
         [Route("{name}")]
         public async Task<IHttpActionResult> GetProject(string name)
         {
-            Project project = await Context.Projects
+            ProjectDTO projectDTO = await Context.Projects
                 .AsNoTracking()
+                .ProjectTo<ProjectDTO>(Mapper.ConfigurationProvider)
                 .SingleOrDefaultAsync(p => p.Name == name);
-            ProjectDTO projectDTO = Mapper.Map<ProjectDTO>(project);
-            if (project == null)
+            if (projectDTO == null)
             {
                 return NotFound();
             }
@@ -49,39 +48,9 @@ namespace PlanTogetherDotNetAPI.Controllers
             return Ok(projectDTO);
         }
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutProject(Guid id, EditProjectDTO input)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != input.Id)
-            {
-                return BadRequest();
-            }
-
-            var project = await Context.Projects.FindAsync(id);
-            Mapper.Map(input, project);
-
-            try
-            {
-                await Context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProjectExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return StatusCode(HttpStatusCode.NoContent);
-        }
+        [Route("{id:guid}")]
+        public Task<IHttpActionResult> PutProject(Guid id, EditProjectDTO input)
+            => Put(id, input);
         [ResponseType(typeof(ProjectDTO))]
         public async Task<IHttpActionResult> PostProject(CreateProjectDTO input)
         {
@@ -168,7 +137,7 @@ namespace PlanTogetherDotNetAPI.Controllers
         }
         [ResponseType(typeof(ProcessDTO))]
         [Route("{name}/processes")]
-        public IQueryable<ProcessDTO> GetProcesss(string name, [FromUri(Name = "")] PaginationParams @params)
+        public IQueryable<ProcessDTO> GetProcesses(string name, [FromUri(Name = "")] PaginationParams @params)
         {
             var query = Context.Processes
                 .AsNoTracking()

@@ -10,14 +10,16 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Linq.Expressions;
-using PlanTogetherDotNetAPI.DTOs.Group;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
+using System.Net;
 
 namespace PlanTogetherDotNetAPI.Controllers
 {
-    public abstract class BaseApiController<TEntity, TDTO> : ApiController
+    public abstract class BaseApiController<TEntity, TDTO, TEditDTO> : ApiController
         where TEntity : Entity
         where TDTO : EntityDTO
+        where TEditDTO : EditDTO
     {
         public BaseApiController(DataContext context, IMapper mapper)
         {
@@ -47,7 +49,7 @@ namespace PlanTogetherDotNetAPI.Controllers
         }
         protected async Task<IHttpActionResult> Get(Guid id)
         {
-            TDTO entityDTO = await Context.Groups
+            TDTO entityDTO = await Context.Set<TEntity>()
                 .AsNoTracking()
                 .ProjectTo<TDTO>(Mapper.ConfigurationProvider)
                 .SingleOrDefaultAsync(g => g.Id == id);
@@ -57,6 +59,38 @@ namespace PlanTogetherDotNetAPI.Controllers
             }
 
             return Ok(entityDTO);
+        }
+        protected async Task<IHttpActionResult> Put(Guid id, TEditDTO input)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (id != input.Id)
+            {
+                return BadRequest();
+            }
+            var entity = await Context.Set<TEntity>().FindAsync(id);
+            Mapper.Map(input, entity);
+
+            try
+            {
+                await Context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!EntityExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return StatusCode(HttpStatusCode.NoContent);
         }
         protected async Task<IHttpActionResult> Delete(Guid id)
         {
@@ -71,7 +105,7 @@ namespace PlanTogetherDotNetAPI.Controllers
 
             return Ok(Mapper.Map<TDTO>(entity));
         }
-        public bool EntityExists(Guid id)
+        protected bool EntityExists(Guid id)
         {
             return Context.Set<TEntity>().Count(e => e.Id == id) > 0;
         }
