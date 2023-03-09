@@ -34,7 +34,7 @@ namespace PlanTogetherDotNetAPI.Controllers
             => Get(id);
         [ResponseType(typeof(ProjectDTO))]
         [Route("{name}")]
-        public async Task<IHttpActionResult> GetProject(string name)
+        public async Task<IHttpActionResult> GetProjectByName(string name)
         {
             ProjectDTO projectDTO = await Context.Projects
                 .AsNoTracking()
@@ -96,6 +96,7 @@ namespace PlanTogetherDotNetAPI.Controllers
             return CreatedAtRoute("DefaultApi", new { id = project.Id }, Mapper.Map<ProjectDTO>(project));
         }
         [ResponseType(typeof(ProjectDTO))]
+        [Route("{id:guid}")]
         public Task<IHttpActionResult> DeleteProject(Guid id)
             => Delete(id);
         [ResponseType(typeof(MemberDTO))]

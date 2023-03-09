@@ -22,9 +22,10 @@ namespace PlanTogetherDotNetAPI.Controllers
     public class GroupsController : BaseApiController<Group, GroupDTO, EditGroupDTO>
     {
         public GroupsController(DataContext context, IMapper mapper) : base(context, mapper) {}
-        public IQueryable<GroupDTO> GetProjects([FromUri(Name = "")] PaginationParams @params)
+        public IQueryable<GroupDTO> GetGroups([FromUri(Name = "")] PaginationParams @params)
             => Get(
-                @params, p => p.Name.ToLower().Contains(@params.Query.ToLower()) || p.Title.Contains(@params.Query.ToLower())
+                @params, p => p.Name.ToLower().Contains(@params.Query.ToLower())
+                || p.Title.Contains(@params.Query.ToLower())
             );
         [ResponseType(typeof(GroupDTO))]
         [Route("{id:guid}")]
@@ -32,7 +33,7 @@ namespace PlanTogetherDotNetAPI.Controllers
             => Get(id);
         [ResponseType(typeof(GroupDTO))]
         [Route("{name}")]
-        public async Task<IHttpActionResult> GetGroup(string name)
+        public async Task<IHttpActionResult> GetGroupByName(string name)
         {
             GroupDTO groupDTO = await Context.Groups
                 .AsNoTracking()
@@ -95,6 +96,7 @@ namespace PlanTogetherDotNetAPI.Controllers
             return CreatedAtRoute("DefaultApi", new { id = group.Id }, Mapper.Map<GroupDTO>(group));
         }
         [ResponseType(typeof(GroupDTO))]
+        [Route("{id:guid}")]
         public Task<IHttpActionResult> DeleteGroup(Guid id)
             => Delete(id);
         [ResponseType(typeof(ProjectDTO))]

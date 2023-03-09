@@ -26,6 +26,7 @@ namespace PlanTogetherDotNetAPI.Controllers
         public IQueryable<MissionDTO> GetMissions([FromUri(Name = "")] PaginationParams @params)
             => Get(@params, m => m.Title.ToLower().Contains(@params.Query.ToLower()) || m.Description.Contains(@params.Query.ToLower()));
         [ResponseType(typeof(MissionDTO))]
+        [Route("{id:guid}")]
         public Task<IHttpActionResult> GetMission(Guid id)
             => Get(id);
         [ResponseType(typeof(void))]
@@ -67,6 +68,7 @@ namespace PlanTogetherDotNetAPI.Controllers
             return CreatedAtRoute("DefaultApi", new { id = mission.Id }, Mapper.Map<MissionDTO>(mission));
         }
         [ResponseType(typeof(MissionDTO))]
+        [Route("{id:guid}")]
         public Task<IHttpActionResult> DeleteMission(Guid id)
             => Delete(id);
         [ResponseType(typeof(MemberDTO))]

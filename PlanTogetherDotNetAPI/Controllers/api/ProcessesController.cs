@@ -14,6 +14,7 @@ using System;
 
 namespace PlanTogetherDotNetAPI.Controllers.api
 {
+    [RoutePrefix("api/Processes")]
     public class ProcessesController : BaseApiController<Process, ProcessDTO, EditProcessDTO>
     {
         public ProcessesController(DataContext context, IMapper mapper) : base(context, mapper) {}
@@ -22,6 +23,7 @@ namespace PlanTogetherDotNetAPI.Controllers.api
                 @params, p => p.Description.ToLower().Contains(@params.Query.ToLower())
             );
         [ResponseType(typeof(ProcessDTO))]
+        [Route("{id:guid}")]
         public Task<IHttpActionResult> GetProcess(Guid id)
             => Get(id);
         [ResponseType(typeof(void))]
@@ -66,6 +68,7 @@ namespace PlanTogetherDotNetAPI.Controllers.api
             return CreatedAtRoute("DefaultApi", new { id = process.Id }, Mapper.Map<ProcessDTO>(process));
         }
         [ResponseType(typeof(ProcessDTO))]
+        [Route("{id:guid}")]
         public Task<IHttpActionResult> DeleteProcess(Guid id)
             => Delete(id);
         private bool ProcessExists(Guid id)

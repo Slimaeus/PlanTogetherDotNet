@@ -13,6 +13,7 @@ using PlanTogetherDotNetAPI.Models;
 
 namespace PlanTogetherDotNetAPI.Controllers
 {
+    [RoutePrefix("api/Comments")]
     public class CommentsController : BaseApiController<Comment, CommentDTO, EditCommentDTO>
     {
         public CommentsController(DataContext context, IMapper mapper) : base(context, mapper) {}
@@ -21,6 +22,7 @@ namespace PlanTogetherDotNetAPI.Controllers
                 @params, p => p.Content.ToLower().Contains(@params.Query.ToLower())
             );
         [ResponseType(typeof(CommentDTO))]
+        [Route("{id:guid}")]
         public Task<IHttpActionResult> GetComment(Guid id)
             => Get(id);
         [ResponseType(typeof(void))]
@@ -72,6 +74,7 @@ namespace PlanTogetherDotNetAPI.Controllers
             return CreatedAtRoute("DefaultApi", new { id = comment.Id }, Mapper.Map<CommentDTO>(comment));
         }
         [ResponseType(typeof(CommentDTO))]
+        [Route("{id:guid}")]
         public Task<IHttpActionResult> DeleteComment(Guid id)
             => Delete(id);
         private bool CommentExists(Guid id)
