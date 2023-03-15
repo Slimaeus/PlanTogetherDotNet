@@ -21,6 +21,22 @@ namespace PlanTogetherDotNetAPI.Data
         {
             base.Seed(context);
 
+            if (context.Roles.Any()) return;
+
+            var roles = new IdentityRole[]
+            {
+                new IdentityRole { Name = "Admin" },
+                new IdentityRole { Name = "ProjectManager" },
+                new IdentityRole { Name = "GroupManager" }
+            };
+
+            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
+
+            foreach (var role in roles)
+            {
+                roleManager.Create(role);
+            }
+
             if (context.Users.Any()) return;
 
             var users = new List<AppUser>
@@ -29,7 +45,7 @@ namespace PlanTogetherDotNetAPI.Data
                 {
                     DisplayName = "thai",
                     UserName = "thai",
-                    Email = "thai@test.com"
+                    Email = "thai@test.com",
                 },
                 new AppUser
                 {
@@ -55,6 +71,7 @@ namespace PlanTogetherDotNetAPI.Data
 
             foreach (var user in users)
             {
+                userManager.AddToRole(user.Id, roles[0].Name);
                 userManager.Create(user, "P@ssw0rd");
             }
 

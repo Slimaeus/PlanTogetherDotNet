@@ -1,12 +1,16 @@
 ﻿using AutoMapper;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using PlanTogetherDotNetAPI.DTOs;
 using PlanTogetherDotNetAPI.DTOs.Account;
 using PlanTogetherDotNetAPI.Models;
 using PlanTogetherDotNetAPI.Services;
 using System.Data.Entity;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Security;
 
 namespace PlanTogetherDotNetAPI.Controllers
 {
@@ -27,9 +31,12 @@ namespace PlanTogetherDotNetAPI.Controllers
         public async Task<IHttpActionResult> GetCurrentUser()
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            var identity = (ClaimsIdentity)User.Identity;
+            var roles = identity.FindAll(ClaimTypes.Role).Select(c => c.Value);
             if (user == null) return BadRequest();
             var dto = _mapper.Map<UserDTO>(user);
-            dto.Token = _tokenService.CreateToken(user);
+            dto.Roles = roles;
+            dto.Token = _tokenService.CreateToken(user, roles);
             return Ok(dto);
         }
         [Authorize]
@@ -66,8 +73,10 @@ namespace PlanTogetherDotNetAPI.Controllers
             {
                 return Unauthorized();
             }
+            var roles = await _userManager.GetRolesAsync(user.Id);
             var dto = _mapper.Map<UserDTO>(user);
-            dto.Token = _tokenService.CreateToken(user);
+            dto.Roles = roles;
+            dto.Token = _tokenService.CreateToken(user, roles);
             return Ok(dto);
         }
     }

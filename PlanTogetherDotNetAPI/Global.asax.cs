@@ -27,29 +27,12 @@ namespace PlanTogetherDotNetAPI
         {
             var container = new UnityContainer(); //Init-Dependency-Injection
 
-            container.RegisterType<DataContext>(new HierarchicalLifetimeManager());
-
-            container.RegisterType<TokenService>(new HierarchicalLifetimeManager());
-
-            container.RegisterFactory<UserStore<AppUser>>(
-                c => new UserStore<AppUser>(c.Resolve<DataContext>())
-            );
-            container.RegisterFactory<UserManager<AppUser>>(
-                c => new UserManager<AppUser>(c.Resolve<UserStore<AppUser>>())
-            );
-
-            //Config-AutoMapper
-            var config = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new MappingProfile());
-            });
-            container.RegisterInstance(config.CreateMapper());
+            
 
             AreaRegistration.RegisterAllAreas();
 
             GlobalConfiguration.Configure(WebApiConfig.Register);
-            GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container); //Config-Dependency-Injection
-
+            UnityConfig.RegisterComponents();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);

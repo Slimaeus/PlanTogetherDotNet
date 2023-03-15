@@ -266,6 +266,7 @@
     <Compile Include="Controllers\api\CommentsController.cs" />
     <Compile Include="Controllers\api\GroupsController.cs" />
     <Compile Include="Controllers\api\ProcessesController.cs" />
+    <Compile Include="Controllers\api\RolesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\api\MissionsController.cs" />
     <Compile Include="Controllers\api\ProjectsController.cs" />

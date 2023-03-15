@@ -25,14 +25,17 @@ namespace PlanTogetherDotNetAPI.Services
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_tokenKey));
             _signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
         }
-        public string CreateToken(AppUser user)
+        public string CreateToken(AppUser user, IEnumerable<string> roles = null)
         {
-            var claims = new Claim[]
+            var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.Email, user.Email)
             };
+            if (roles != null)
+                foreach (var role in roles)
+                    claims.Add(new Claim(ClaimTypes.Role, role));
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
